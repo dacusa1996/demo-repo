@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADMAS - Login</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="login-container">
+      <div class="brand">
+        <div class="logo">
+          <img src="./images/admas-logo.png" alt="Admas IMS logo" />
+        </div>
+        <div>
+          <h1>Sign in</h1>
+          <div class="lead">Welcome back — sign in to continue</div>
+        </div>
+      </div>
+
+      <form id="login-form" action="javascript:void(0);" method="post" novalidate>
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="username" />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" />
+
+        <div class="helpers">
+          <a href="#">Forgot?</a>
+        </div>
+
+        <button type="submit">Log in</button>
+      </form>
+
+      <div id="message" role="status" aria-live="polite"></div>
+    </main>
+
+    <script src="login.js"></script>
+  </body>
+</html>

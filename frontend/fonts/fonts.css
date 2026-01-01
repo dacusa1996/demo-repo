@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'Sherborne Variable';
+  src: url('./fonts/fonnts.com-Sherborne-Variable-.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sherborne Variable';
+  src: url('./fonts/fonnts.com-Sherborne-Variable-Italic.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}

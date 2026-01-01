@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Users - Inventory Management System</title>
+    <link rel="stylesheet" href="./users.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">A</div>
+          <div>
+            <div class="brand-title">Inventory Management System</div>
+            <div class="brand-sub">Manage Users</div>
+          </div>
+        </div>
+        <div class="user-box">
+          <div class="user-meta">
+            <div id="user-name" class="user-name">Admin</div>
+            <div id="user-role" class="user-email">Role: Admin</div>
+          </div>
+          <button id="back-dashboard" class="ghost-btn" type="button">Dashboard</button>
+          <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card header-card">
+          <div>
+            <p class="muted">User Administration</p>
+            <h2>Manage Users</h2>
+            <p class="muted">View, add, edit, and disable users. (Demo data until API is wired.)</p>
+          </div>
+          <div class="actions">
+            <button id="add-user-btn" class="pill-btn" type="button">➕ Add User</button>
+            <button id="refresh-users" class="ghost-btn" type="button">Refresh</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h3>Users</h3>
+            <p class="muted">Showing latest users (placeholder data).</p>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="users-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="user-form-section" class="card form-card hidden">
+          <div class="card-head">
+            <h3 id="form-title">Add User</h3>
+          </div>
+          <form id="user-form">
+            <div class="form-grid">
+              <label>
+                Full Name
+                <input id="form-name" name="name" type="text" required />
+              </label>
+              <label>
+                Email
+                <input id="form-email" name="email" type="email" required />
+              </label>
+              <label>
+                Role
+                <select id="form-role" name="role" required>
+                  <option value="Admin">Admin</option>
+                  <option value="Clerk">Clerk</option>
+                  <option value="Department Head">Department Head</option>
+                </select>
+              </label>
+              <label>
+                Department
+                <input id="form-dept" name="department" type="text" placeholder="IT, Finance, HR..." />
+              </label>
+              <label>
+                Password
+                <input id="form-password" name="password" type="password" placeholder="Auto-generate if left blank" />
+              </label>
+              <label>
+                Status
+                <select id="form-status" name="status" required>
+                  <option value="Active">Active</option>
+                  <option value="Disabled">Disabled</option>
+                </select>
+              </label>
+            </div>
+            <div class="actions end">
+              <button id="cancel-form" class="ghost-btn" type="button">Cancel</button>
+              <button class="pill-btn" type="submit">Save User</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="./users.js"></script>
+  </body>
+</html>

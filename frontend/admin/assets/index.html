@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Assets - Inventory Management System</title>
+    <link rel="stylesheet" href="./assets.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">A</div>
+          <div>
+            <div class="brand-title">Inventory Management System</div>
+            <div class="brand-sub">Manage Assets</div>
+          </div>
+        </div>
+        <div class="user-box">
+          <div class="user-meta">
+            <div id="user-name" class="user-name">Admin</div>
+            <div id="user-role" class="user-email">Role: Admin</div>
+          </div>
+          <button id="back-dashboard" class="ghost-btn" type="button">Dashboard</button>
+          <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card header-card">
+          <div>
+            <p class="muted">Assets / Manage Assets</p>
+            <h2>Assets</h2>
+            <p class="muted">Search, filter, add, edit, and archive assets. (Live data via API.)</p>
+          </div>
+          <div class="actions">
+            <button id="add-asset-btn" class="pill-btn" type="button">➕ Add Asset</button>
+            <button id="refresh-assets" class="ghost-btn" type="button">Refresh</button>
+          </div>
+        </section>
+
+        <section class="card filters">
+          <div class="filters-grid">
+            <label>
+              Search
+              <input id="search-input" type="text" placeholder="Search by name or tag" />
+            </label>
+            <label>
+              Department
+              <select id="filter-dept">
+                <option value="">All</option>
+              </select>
+            </label>
+            <label>
+              Category
+              <select id="filter-category">
+                <option value="">All</option>
+              </select>
+            </label>
+            <label>
+              Status
+              <select id="filter-status">
+                <option value="">All</option>
+                <option value="available">Available</option>
+                <option value="borrowed">Borrowed</option>
+                <option value="maintenance">Under Maintenance</option>
+              </select>
+            </label>
+            <label>
+              Condition
+              <select id="filter-condition">
+                <option value="">All</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h3>Assets</h3>
+            <p class="muted">Table view of all assets (filterable).</p>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Asset Tag</th>
+                  <th>Year</th>
+                  <th>Month</th>
+                  <th>Day</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Department</th>
+                  <th>Condition</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="assets-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="asset-form-section" class="card form-card hidden">
+          <div class="card-head">
+            <h3 id="form-title">Add Asset</h3>
+          </div>
+          <form id="asset-form">
+            <div class="form-grid">
+              <label>
+                Asset Name
+                <input id="form-name" name="name" type="text" required />
+              </label>
+              <label>
+                Asset Tag
+                <input id="form-tag" name="asset_tag" type="text" placeholder="e.g., ADM-IT-LAP" />
+              </label>
+              <label>
+                Category
+                <input id="form-category" name="category" type="text" />
+              </label>
+              <label>
+                Department
+                <input id="form-dept" name="department" type="text" />
+              </label>
+              <label>
+                Condition
+                <select id="form-condition" name="condition" required>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="poor">Poor</option>
+                </select>
+              </label>
+              <label>
+                Status
+                <select id="form-status" name="status" required>
+                  <option value="available">Available</option>
+                  <option value="borrowed">Borrowed</option>
+                  <option value="maintenance">Under Maintenance</option>
+                </select>
+              </label>
+              <label>
+                Location
+                <input id="form-location" name="location" type="text" />
+              </label>
+              <label>
+                Description
+                <textarea id="form-description" name="description" rows="3"></textarea>
+              </label>
+            </div>
+            <div class="actions end">
+              <button id="cancel-form" class="ghost-btn" type="button">Cancel</button>
+              <button class="pill-btn" type="submit">Save Asset</button>
+            </div>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="./assets.js"></script>
+  </body>
+</html>

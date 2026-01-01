@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admas IMS | Dept Head</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <img src="../images/admas-logo.png" alt="Admas IMS logo" style="width:100%;height:100%;object-fit:contain" />
+        </div>
+        <div>
+          <div class="brand-title">Admas IMS</div>
+          <div class="brand-sub" id="header-sub">Dept Head</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <div class="search-wrap">
+          <input id="top-search" class="top-search" type="search" placeholder="Search requests / assets..." autocomplete="off" />
+          <div id="top-search-results" class="search-results" hidden></div>
+        </div>
+        <div class="user-box">
+          <a id="profile-link" class="profile" href="#" title="Profile">👤</a>
+          <div class="user-meta">
+            <div id="user-name" class="user-name">Dept Head</div>
+            <div id="user-dept" class="user-email">Department: -</div>
+          </div>
+          <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="nav-section">
+          <p class="nav-title">Main</p>
+          <a class="nav-item active" href="#" data-panel="dashboard">Dashboard</a>
+          <a class="nav-item" href="#" data-panel="requests">Requests</a>
+          <a class="nav-item" href="#" data-panel="assets">Assets (View)</a>
+          <a class="nav-item" href="#" data-panel="activity">My Activity</a>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="panel-dashboard" class="content-panel active">
+          <section class="card">
+            <div class="card-head"><h3>KPI Overview (Dept-only)</h3></div>
+            <div class="kpi-row">
+              <div class="kpi-card">
+                <p class="kpi-label">Pending Req</p>
+                <p id="kpi-pending" class="kpi-value">0</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Overdue Assets</p>
+                <p id="kpi-overdue" class="kpi-value">0</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Borrowed Now</p>
+                <p id="kpi-borrowed" class="kpi-value">0</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Month</p>
+                <p id="kpi-month" class="kpi-value">—</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h3>Attention & Risk Indicators</h3></div>
+            <div class="chip-row" id="risk-tabs">
+              <button class="chip active" data-risk-tab="ALL">All</button>
+              <button class="chip" data-risk-tab="OVERDUE">Overdue</button>
+              <button class="chip" data-risk-tab="WAITING">Waiting &gt; 48h</button>
+              <button class="chip" data-risk-tab="MAINT">Maintenance</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table risk-table">
+                <thead id="risk-head">
+                  <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                  </tr>
+                </thead>
+                <tbody id="risk-body">
+                  <tr><td colspan="2">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="actions">
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head"><h3>Recent Activity</h3></div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Asset</th>
+                    <th>Request</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-body-dash">
+                  <tr><td colspan="4">No activity yet.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </section>
+
+        <section id="panel-requests" class="content-panel">
+          <section class="card">
+            <div class="card-head">
+              <h3>Requests</h3>
+              <div class="chip-row" id="queue-tabs">
+                <button class="chip active" data-queue-tab="PENDING">Pending</button>
+                <button class="chip" data-queue-tab="APPROVED">Approved</button>
+                <button class="chip" data-queue-tab="REJECTED">Rejected</button>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ReqID</th>
+                    <th>Asset</th>
+                    <th>Borrower</th>
+                    <th>Purpose</th>
+                    <th>Due</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="queue-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-assets" class="content-panel">
+          <section class="card">
+            <div class="card-head"><h3>Department Assets</h3></div>
+            <div class="toolbar">
+              <input id="assets-search" class="top-search" type="search" placeholder="Search assets..." />
+              <select id="assets-filter-dept">
+                <option value="">Dept</option>
+              </select>
+              <select id="assets-filter-status">
+                <option value="">Status</option>
+                <option value="available">Available</option>
+                <option value="borrowed">Borrowed</option>
+                <option value="under_maintenance">Under Maintenance</option>
+              </select>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Asset Tag</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Condition</th>
+                    <th>Borrower</th>
+                  </tr>
+                </thead>
+                <tbody id="assets-body">
+                  <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-activity" class="content-panel">
+          <section class="card">
+            <div class="card-head"><h3>My Activity</h3></div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Asset</th>
+                    <th>Request</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-body">
+                  <tr><td colspan="4">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="profile-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Profile</h3>
+        <button id="profile-close" class="ghost-btn slim" type="button">Close</button>
+      </div>
+      <div class="modal-grid">
+        <div>
+          <p class="label">Name</p>
+          <p id="p-name" class="value">-</p>
+        </div>
+        <div>
+          <p class="label">Email</p>
+          <p id="p-email" class="value">-</p>
+        </div>
+        <div>
+          <p class="label">Role</p>
+          <p id="p-role" class="value">-</p>
+        </div>
+        <div>
+          <p class="label">Department</p>
+          <p id="p-dept" class="value">-</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
+
+

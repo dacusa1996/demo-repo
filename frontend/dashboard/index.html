@@ -1,0 +1,527 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADMAS Dashboard</title>
+    <link rel="stylesheet" href="./dashboard.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topnav">
+        <div class="brand">
+          <div class="logo">
+            <img src="../images/admas-logo.png" alt="Admas IMS" style="width:100%;height:100%;object-fit:contain" />
+          </div>
+          <div>
+            <div class="brand-title">Admas IMS</div>
+            <div class="brand-sub">Admin Dashboard</div>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button id="menu-toggle" class="icon-btn menu-toggle" type="button" title="Menu">&9776;</button>
+        <div class="search-wrap">
+          <input id="top-search" class="top-search" type="search" placeholder="Search assets / users / requests..." autocomplete="off" />
+          <div id="top-search-results" class="search-results" hidden></div>
+        </div>
+          <button class="icon-btn" type="button" title="Notifications">&#128276;</button>
+          <div class="user-box">
+            <a id="profile-link" class="profile" href="#" title="Profile">&#128100;</a>
+            <div class="user-meta">
+              <div id="user-name" class="user-name">Admin</div>
+              <div id="user-role" class="user-email">Role: Admin</div>
+            </div>
+            <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <div id="mobile-overlay" class="mobile-overlay"></div>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="nav-section">
+            <p class="nav-title">Main</p>
+            <a class="nav-item active">Dashboard</a>
+            <a class="nav-item" data-link="assets">Assets</a>
+            <a class="nav-item" data-link="borrowing">Borrowing</a>
+            <a class="nav-item" data-link="maintenance">Maintenance</a>
+            <a class="nav-item" data-link="users">Users</a>
+            <a class="nav-item" data-link="reports">Reports</a>
+          </div>
+        </aside>
+
+        <main class="content">
+          <section id="panel-dashboard" class="content-panel active">
+            <section class="card status">
+              <div>
+                <p class="muted">Welcome back</p>
+                <h2 id="welcome-title"></h2>
+              </div>
+              <div class="pill success" id="auth-status-pill">Active</div>
+            </section>
+
+            <section class="card">
+              <div class="card-head">
+                <h3>KPI Overview</h3>
+              </div>
+              <div class="kpi-grid">
+                <div class="kpi-card clickable" data-action="assets">
+                  <p class="kpi-label">Total Assets</p>
+                  <p id="kpi-total" class="kpi-value">-</p>
+                  <p class="kpi-sub">All assets</p>
+                </div>
+                <div class="kpi-card clickable" data-action="assets">
+                  <p class="kpi-label">Available</p>
+                  <p id="kpi-available" class="kpi-value">-</p>
+                  <p class="kpi-sub">Ready to use</p>
+                </div>
+                <div class="kpi-card clickable" data-action="borrowing">
+                  <p class="kpi-label">Borrowed</p>
+                  <p id="kpi-borrowed" class="kpi-value">-</p>
+                  <p class="kpi-sub">Checked out</p>
+                </div>
+                <div class="kpi-card clickable" data-action="maintenance">
+                  <p class="kpi-label">Under Maintenance</p>
+                  <p id="kpi-maintenance" class="kpi-value">-</p>
+                  <p class="kpi-sub">Being serviced</p>
+                </div>
+                <div class="kpi-card clickable" data-action="borrowing">
+                  <p class="kpi-label">Overdue Returns</p>
+                  <p id="kpi-overdue" class="kpi-value">-</p>
+                  <p class="kpi-sub">Past due</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head">
+                <h3>Pending Approvals</h3>
+              </div>
+              <p class="muted">Approval queue for admins.</p>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Request ID</th>
+                      <th>Asset</th>
+                      <th>Requested By</th>
+                      <th>Department</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pending-body"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-head">
+                <h3>Recent Activity</h3>
+              </div>
+              <p class="muted">Last 5?10 events across the system.</p>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date / Time</th>
+                      <th>Action</th>
+                      <th>Asset Name</th>
+                      <th>Performed By</th>
+                    </tr>
+                  </thead>
+                  <tbody id="activity-body"></tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+
+          <section id="panel-assets" class="content-panel">
+            <section class="card">
+              <div class="card-head">
+                <h3>Assets</h3>
+              </div>
+              <div class="toolbar">
+                <input id="assets-search" class="top-search" type="search" placeholder="Search assets?" />
+                <select id="assets-filter-dept"><option value="">Dept</option></select>
+                <select id="assets-filter-cat"><option value="">Category</option></select>
+                <select id="assets-filter-status">
+                  <option value="">Status</option>
+                  <option value="available">Available</option>
+                  <option value="borrowed">Borrowed</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+                <button class="filter-like-btn align-end" data-action="add-asset">+ Add Asset</button>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Tag</th><th>Name</th><th>Dept</th><th>Cond.</th><th>Status</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="assets-body-table">
+                    <tr><td colspan="6">Hook to assets list here.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="detail-drawer muted">Select an asset to view details (overview, history, maintenance, audit).</div>
+            </section>
+          </section>
+
+          <section id="panel-borrowing" class="content-panel">
+            <section class="card">
+              <div class="card-head">
+                <h3>Borrowing</h3>
+                <button id="borrow-new-btn" class="pill-btn primary slim" type="button">+ Issue Borrow</button>
+              </div>
+              <div class="filter-row">
+                <button class="chip">Pending</button>
+                <button class="chip">Approved</button>
+                <button class="chip">Issued</button>
+                <button class="chip">Returned</button>
+                <button class="chip">Rejected</button>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>ReqID</th><th>Asset</th><th>Borrower</th><th>Dept</th><th>Due</th><th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="borrow-table">
+                    <tr><td colspan="6">Hook to requests list here.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+
+          <section id="panel-maintenance" class="content-panel">
+            <section class="card">
+              <div class="card-head">
+                <h3>Maintenance</h3>
+                <button id="maint-new-btn" class="pill-btn primary slim" type="button">+ Log Maintenance</button>
+              </div>
+              <div class="filter-row">
+                <button class="chip">Open</button>
+                <button class="chip">In Progress</button>
+                <button class="chip">Completed</button>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Asset Tag</th><th>Issue</th><th>Status</th><th>Logged By</th>
+                    </tr>
+                  </thead>
+                  <tbody id="maint-table">
+                    <tr><td colspan="4">Hook to maintenance list here.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+
+          <section id="panel-users" class="content-panel">
+            <section class="card">
+              <div class="card-head">
+                <h3>Users</h3>
+              </div>
+              <div class="toolbar">
+                <input class="top-search" type="search" placeholder="Search users?" />
+                <select><option>Role</option></select>
+                <select><option>Dept</option></select>
+                <select><option>Status</option></select>
+                <button class="filter-like-btn align-end" data-action="manage-users">+ Add User</button>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Name</th><th>Email</th><th>Role</th><th>Dept</th><th>Status</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody id="users-table">
+                    <tr><td colspan="5">Hook to users list here.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+
+          <section id="panel-reports" class="content-panel">
+            <section class="card">
+              <div class="card-head">
+                <h3>Reports</h3>
+              </div>
+              <div class="toolbar">
+                <label class="form-field compact">
+                  <span class="label">Start Date (from)</span>
+                  <input id="report-start" class="top-search" type="date" placeholder="YYYY-MM-DD" />
+                </label>
+                <label class="form-field compact">
+                  <span class="label">End Date (through)</span>
+                  <input id="report-end" class="top-search" type="date" placeholder="YYYY-MM-DD" />
+                </label>
+                <select id="report-dept"><option value="">Dept</option></select>
+                <select id="report-category"><option value="">Category</option></select>
+              </div>
+              <div class="report-grid">
+                <div class="report-card">
+                  <h4>Assets by Department</h4>
+                  <div class="table-wrapper">
+                    <table class="data-table">
+                      <thead><tr><th>Dept</th><th>Count</th></tr></thead>
+                      <tbody id="report-assets-body"><tr><td colspan="2">Loading...</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="report-card">
+                  <h4>Borrowing Summary</h4>
+                  <div class="table-wrapper">
+                    <table class="data-table">
+                      <thead><tr><th>Status</th><th>Count</th></tr></thead>
+                      <tbody id="report-requests-body"><tr><td colspan="2">Loading...</td></tr></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="report-card">
+                  <h4>Overdue &amp; Maintenance</h4>
+                  <ul id="report-overdue-list" class="report-list">
+                    <li>Overdue: <span id="rep-overdue">-</span></li>
+                    <li>Under Maintenance: <span id="rep-maint">-</span></li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </section>
+              
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div id="add-asset-modal" class="modal">
+      <div class="modal-card large">
+        <div class="modal-head">
+          <h3>Add Asset</h3>
+          <button id="add-asset-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <form id="add-asset-form">
+          <div class="form-grid">
+            <input type="hidden" name="asset_id" id="asset-id-field" />
+            <label class="form-field">
+              <span class="label">Asset Name</span>
+              <input type="text" name="name" required />
+            </label>
+            <label class="form-field">
+              <span class="label">Asset Tag Prefix</span>
+              <input type="text" name="asset_tag" placeholder="ADM-IT-LAP" required />
+            </label>
+            <label class="form-field">
+              <span class="label">Department</span>
+              <input type="text" name="department" placeholder="IT" />
+            </label>
+            <label class="form-field">
+              <span class="label">Category</span>
+              <input type="text" name="category" placeholder="Laptops" />
+            </label>
+            <label class="form-field">
+              <span class="label">Status</span>
+              <select name="status">
+                <option value="available">Available</option>
+                <option value="borrowed">Borrowed</option>
+                <option value="under_maintenance">Under Maintenance</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="label">Condition</span>
+              <select name="cond">
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="label">Location</span>
+              <input type="text" name="location" placeholder="Storage / Room" />
+            </label>
+            <label class="form-field">
+              <span class="label">Purchase Date</span>
+              <input type="date" name="purchase_date" />
+            </label>
+            <label class="form-field full">
+              <span class="label">Description</span>
+              <textarea name="description" rows="3" placeholder="Notes"></textarea>
+            </label>
+          </div>
+          <div class="actions modal-actions">
+            <button type="button" class="ghost-btn slim" id="add-asset-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Save Asset</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="borrow-modal" class="modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Issue Borrow Request</h3>
+          <button id="borrow-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <form id="borrow-form">
+          <div class="form-grid">
+            <label class="form-field">
+              <span class="label">Asset</span>
+              <select id="borrow-asset" required></select>
+            </label>
+            <label class="form-field">
+              <span class="label">Borrower Name</span>
+              <input type="text" id="borrow-borrower" required />
+            </label>
+            <label class="form-field">
+              <span class="label">Borrower Dept</span>
+              <input type="text" id="borrow-dept" />
+            </label>
+            <label class="form-field">
+              <span class="label">Expected Return</span>
+              <input type="date" id="borrow-return" />
+            </label>
+            <label class="form-field full">
+              <span class="label">Reason</span>
+              <textarea id="borrow-reason" rows="3" placeholder="Optional"></textarea>
+            </label>
+          </div>
+          <div id="borrow-msg" class="muted"></div>
+          <div class="actions modal-actions">
+            <button type="button" class="ghost-btn slim" id="borrow-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="maint-modal" class="modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Log Maintenance</h3>
+          <button id="maint-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <form id="maint-form">
+          <div class="form-grid">
+            <label class="form-field">
+              <span class="label">Asset</span>
+              <select id="maint-asset" required></select>
+            </label>
+            <label class="form-field full">
+              <span class="label">Issue</span>
+              <textarea id="maint-issue" rows="3" required></textarea>
+            </label>
+          </div>
+          <div id="maint-msg" class="muted"></div>
+          <div class="actions modal-actions">
+            <button type="button" class="ghost-btn slim" id="maint-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Log</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="add-user-modal" class="modal">
+      <div class="modal-card large">
+        <div class="modal-head">
+          <h3 id="add-user-title">Add User</h3>
+          <button id="add-user-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <form id="add-user-form">
+          <input type="hidden" name="user_id" id="user-id-field" />
+          <div class="form-grid">
+            <label class="form-field">
+              <span class="label">Name</span>
+              <input type="text" name="name" required />
+            </label>
+            <label class="form-field">
+              <span class="label">Email</span>
+              <input type="email" name="email" required />
+            </label>
+            <label class="form-field">
+              <span class="label">Role</span>
+              <select name="role">
+                <option value="admin">Admin</option>
+                <option value="clerk">Clerk</option>
+                <option value="dept head">Dept Head</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="label">Department</span>
+              <select name="department" required>
+                <option value="">Select department</option>
+                <option value="CS">CS</option>
+                <option value="BMG">BMG</option>
+                <option value="MKT">MKT</option>
+                <option value="ACC">ACC</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="label">Status</span>
+              <select name="status">
+                <option value="Active">Active</option>
+                <option value="Disabled">Disabled</option>
+              </select>
+            </label>
+            <label class="form-field">
+              <span class="label">Password</span>
+              <input type="password" name="password" minlength="8" required />
+            </label>
+          </div>
+          <div class="actions modal-actions">
+            <button type="button" class="ghost-btn slim" id="add-user-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Save User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="profile-modal" class="modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Profile</h3>
+          <button id="profile-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <div class="modal-grid">
+          <div>
+            <p class="label">Name</p>
+            <p id="p-name" class="value">-</p>
+          </div>
+          <div>
+            <p class="label">Email</p>
+            <p id="p-email" class="value">-</p>
+          </div>
+          <div>
+            <p class="label">Role</p>
+            <p id="p-role" class="value">-</p>
+          </div>
+          <div>
+            <p class="label">Department</p>
+            <p id="p-dept" class="value">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./dashboard.js"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+

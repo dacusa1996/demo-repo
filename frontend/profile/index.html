@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - ADMAS</title>
+    <link rel="stylesheet" href="./profile.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo">A</div>
+          <div>
+            <div class="brand-title">Inventory Management System</div>
+            <div class="brand-sub">Profile</div>
+          </div>
+        </div>
+        <div class="user-box">
+          <div class="user-meta">
+            <div id="user-name" class="user-name">User</div>
+            <div id="user-role" class="user-email">Role: -</div>
+          </div>
+          <button id="back-btn" class="ghost-btn" type="button">Back</button>
+          <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="card-head">
+            <h3>Profile</h3>
+          </div>
+          <div class="grid">
+            <div>
+              <p class="label">Name</p>
+              <p id="p-name" class="value">-</p>
+            </div>
+            <div>
+              <p class="label">Email</p>
+              <p id="p-email" class="value">-</p>
+            </div>
+            <div>
+              <p class="label">Role</p>
+              <p id="p-role" class="value">-</p>
+            </div>
+            <div>
+              <p class="label">Department</p>
+              <p id="p-dept" class="value">-</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./profile.js"></script>
+  </body>
+</html>

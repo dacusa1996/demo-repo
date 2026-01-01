@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admas IMS | Clerk</title>
+  <link rel="stylesheet" href="../dashboard/dashboard.css" />
+</head>
+<body>
+  <div class="shell">
+    <header class="topnav">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div>
+          <div class="brand-title">Admas IMS</div>
+          <div class="brand-sub">Clerk</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button id="menu-toggle" class="icon-btn menu-toggle" type="button" title="Menu">Menu</button>
+        <div class="search-wrap">
+          <input id="top-search" class="top-search" type="search" placeholder="Search assets / borrowers / requests..." autocomplete="off" />
+          <div id="top-search-results" class="search-results" hidden></div>
+        </div>
+        <div class="user-box">
+          <a id="profile-link" class="profile" href="#" title="Profile">👤</a>
+          <div class="user-meta">
+            <div id="user-name" class="user-name">Clerk</div>
+            <div id="user-role" class="user-email">Dept: -</div>
+          </div>
+          <button id="logout-btn" class="ghost-btn" type="button">Logout</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="nav-section">
+          <p class="nav-title">Main</p>
+          <a class="nav-item active" data-panel="dashboard">Dashboard</a>
+          <a class="nav-item" data-panel="requests">Requests</a>
+          <a class="nav-item" data-panel="assets">Assets</a>
+          <a class="nav-item" data-panel="maintenance">Maintenance</a>
+          <a class="nav-item" data-panel="myactivity">My Activity</a>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section id="panel-dashboard" class="content-panel active">
+          <section class="card status">
+            <div>
+              <p class="muted">Welcome back</p>
+              <h2 id="welcome-title">Clerk Workspace</h2>
+              <p class="muted">Daily snapshot and work queue.</p>
+            </div>
+            <div class="pill success">Online</div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h3>Daily Overview</h3>
+            </div>
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <p class="kpi-label">Requests</p>
+                <p id="kpi-requests-today" class="kpi-value">0</p>
+                <p class="kpi-sub">Today</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Approved</p>
+                <p id="kpi-approved" class="kpi-value">0</p>
+                <p class="kpi-sub">Waiting</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Issued</p>
+                <p id="kpi-issued" class="kpi-value">0</p>
+                <p class="kpi-sub">Active</p>
+              </div>
+              <div class="kpi-card">
+                <p class="kpi-label">Overdue</p>
+                <p id="kpi-overdue" class="kpi-value">0</p>
+                <p class="kpi-sub">Active</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h3>Work Queue</h3>
+              <div class="chip-row" id="queue-tabs">
+                <button class="chip active" data-queue-tab="PENDING">Pending</button>
+                <button class="chip" data-queue-tab="APPROVED">Approved to Issue</button>
+                <button class="chip" data-queue-tab="ISSUED">Borrowed / Overdue</button>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ReqID</th>
+                    <th>Asset Tag</th>
+                    <th>Borrower</th>
+                    <th>Dept</th>
+                    <th>Due</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="queue-body">
+                  <tr><td colspan="6">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h3>Recent Activity</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Asset</th>
+                    <th>Request</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="activity-body">
+                  <tr><td colspan="5">No recent activity.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-requests" class="content-panel">
+          <section class="card">
+            <div class="card-head">
+              <h3>Requests</h3>
+              <button id="new-request-btn" class="pill-btn primary slim" type="button">+ New Request</button>
+            </div>
+            <div class="chip-row" id="requests-tabs">
+              <button class="chip active" data-req-tab="ALL">All</button>
+              <button class="chip" data-req-tab="PENDING">Pending</button>
+              <button class="chip" data-req-tab="APPROVED">Approved</button>
+              <button class="chip" data-req-tab="REJECTED">Rejected</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ReqID</th>
+                    <th>Asset</th>
+                    <th>Borrower</th>
+                    <th>Dept</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="requests-panel-body">
+                  <tr><td colspan="7">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="card-head">
+              <h3>Issued / Borrowed</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ReqID</th>
+                    <th>Asset</th>
+                    <th>Borrower</th>
+                    <th>Dept</th>
+                    <th>Borrowed</th>
+                    <th>Due</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="issued-panel-body">
+                  <tr><td colspan="7">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-assets" class="content-panel">
+          <section class="card">
+            <div class="card-head">
+              <h3>Assets</h3>
+            </div>
+            <div class="toolbar">
+              <input id="assets-search" class="top-search" type="search" placeholder="Search assets..." />
+              <select id="assets-filter-dept"><option value="">Dept</option></select>
+              <select id="assets-filter-status">
+                <option value="">Status</option>
+                <option value="available">Available</option>
+                <option value="borrowed">Borrowed</option>
+                <option value="under_maintenance">Under Maintenance</option>
+              </select>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Asset Tag</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Condition</th>
+                    <th>Borrower</th>
+                  </tr>
+                </thead>
+                <tbody id="assets-table-body">
+                  <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-maintenance" class="content-panel">
+          <section class="card">
+            <div class="card-head">
+              <h3>Maintenance</h3>
+              <button id="maintenance-new-btn" class="pill-btn primary slim" type="button">+ Log Maintenance</button>
+            </div>
+            <div class="chip-row" id="maintenance-tabs">
+              <button class="chip active" data-maint-tab="OPEN">Open</button>
+              <button class="chip" data-maint-tab="IN_PROGRESS">In Progress</button>
+              <button class="chip" data-maint-tab="COMPLETED">Completed</button>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Issue</th>
+                    <th>Status</th>
+                    <th>Logged By</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="maintenance-body">
+                  <tr><td colspan="5">No maintenance records.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+
+        <section id="panel-myactivity" class="content-panel">
+          <section class="card">
+            <div class="card-head">
+              <h3>My Activity</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Asset</th>
+                    <th>Request</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="my-activity-body">
+                  <tr><td colspan="5">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="new-request-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>New Borrow Request</h3>
+        <button id="new-req-close" class="ghost-btn slim" type="button">Close</button>
+      </div>
+      <form id="new-req-form">
+        <div class="form-grid">
+          <label class="form-field">
+            <span class="label">Asset</span>
+            <input id="new-req-asset-search" type="search" placeholder="Search assets..." />
+            <select id="new-req-asset" required>
+              <option value="">Loading...</option>
+            </select>
+          </label>
+          <label class="form-field">
+            <span class="label">Borrower Name</span>
+            <input id="new-req-borrower" type="text" required />
+          </label>
+          <label class="form-field">
+            <span class="label">Department</span>
+            <input id="new-req-dept" type="text" />
+          </label>
+          <label class="form-field">
+            <span class="label">Expected Return</span>
+            <input id="new-req-return" type="date" />
+          </label>
+          <label class="form-field full">
+            <span class="label">Reason (optional)</span>
+            <textarea id="new-req-reason" rows="2"></textarea>
+          </label>
+        </div>
+        <div id="new-req-msg" class="muted"></div>
+        <div class="actions modal-actions" style="margin-top:10px;">
+          <button id="new-req-cancel" type="button" class="ghost-btn slim">Cancel</button>
+          <button type="submit" class="pill-btn primary slim">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="maintenance-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Log Maintenance</h3>
+        <button id="maint-close" class="ghost-btn slim" type="button">Close</button>
+      </div>
+      <form id="maint-form">
+        <div class="form-grid">
+          <label class="form-field">
+            <span class="label">Asset</span>
+            <select id="maint-asset" required>
+              <option value="">Loading assets...</option>
+            </select>
+          </label>
+          <label class="form-field full">
+            <span class="label">Issue</span>
+            <textarea id="maint-issue" rows="3" placeholder="Describe the issue" required></textarea>
+          </label>
+        </div>
+        <div id="maint-msg" class="muted"></div>
+        <div class="actions modal-actions" style="margin-top:10px;">
+          <button id="maint-cancel" type="button" class="ghost-btn slim">Cancel</button>
+          <button type="submit" class="pill-btn primary slim">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="activity-modal" class="modal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3>Activity Details</h3>
+        <button id="activity-close" class="ghost-btn slim" type="button">Close</button>
+      </div>
+      <div class="form-grid">
+        <div class="form-field">
+          <span class="label">Request</span>
+          <div id="activity-req">-</div>
+        </div>
+        <div class="form-field">
+          <span class="label">Asset</span>
+          <div id="activity-asset">-</div>
+        </div>
+        <div class="form-field">
+          <span class="label">Status</span>
+          <div id="activity-status">-</div>
+        </div>
+        <div class="form-field">
+          <span class="label">Borrower</span>
+          <div id="activity-borrower">-</div>
+        </div>
+        <div class="form-field">
+          <span class="label">Dept</span>
+          <div id="activity-dept">-</div>
+        </div>
+        <div class="form-field">
+          <span class="label">Expected Return</span>
+          <div id="activity-due">-</div>
+        </div>
+        <div class="form-field full">
+          <span class="label">Reason / Comment</span>
+          <div id="activity-reason">-</div>
+        </div>
+      </div>
+      <div class="actions modal-actions" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
