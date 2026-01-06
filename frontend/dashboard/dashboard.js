@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const borrowReturn = document.getElementById('borrow-return');
   const borrowReason = document.getElementById('borrow-reason');
   const borrowMsg = document.getElementById('borrow-msg');
+  const borrowAssetSearch = document.getElementById('borrow-asset-search');
   const maintNewBtn = document.getElementById('maint-new-btn');
   const maintModal = document.getElementById('maint-modal');
   const maintClose = document.getElementById('maint-close');
@@ -267,7 +268,12 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${item.department}</td>
         <td>${item.date}</td>
         <td>${item.status}</td>
-        <td><button class="pill-btn slim" type="button" disabled>View</button></td>
+        <td>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="pill-btn slim btn-req-approve" data-action="approve" data-id="${item.id}" type="button">Approve</button>
+            <button class="pill-btn slim danger btn-req-reject" data-action="reject" data-id="${item.id}" type="button">Reject</button>
+          </div>
+        </td>
       `;
       pendingBody.appendChild(row);
     });
@@ -380,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list.length) {
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 6;
+      td.colSpan = 7;
       td.textContent = 'No requests found.';
       row.appendChild(td);
       borrowTableBody.appendChild(row);
@@ -388,6 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     list.forEach((r) => {
       const row = document.createElement('tr');
+      const canAct = (r.status || '').toUpperCase() === 'PENDING';
       row.innerHTML = `
         <td>${r.id}</td>
         <td>${r.asset_tag || r.asset_name || '-'}</td>
@@ -395,8 +402,21 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${r.borrower_department || r.department || '-'}</td>
         <td>${r.expected_return || '-'}</td>
         <td>${r.status || '-'}</td>
+        <td>
+          ${canAct ? `
+            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+              <button class="pill-btn slim btn-req-approve" data-action="approve" data-id="${r.id}" type="button">Approve</button>
+              <button class="pill-btn slim danger btn-req-reject" data-action="reject" data-id="${r.id}" type="button">Reject</button>
+            </div>` : '<span class="muted">—</span>'}
+        </td>
       `;
       borrowTableBody.appendChild(row);
+    });
+    borrowTableBody.querySelectorAll('.btn-req-approve').forEach((btn) => {
+      btn.addEventListener('click', () => updateRequestStatus(btn.dataset.id, 'APPROVED'));
+    });
+    borrowTableBody.querySelectorAll('.btn-req-reject').forEach((btn) => {
+      btn.addEventListener('click', () => updateRequestStatus(btn.dataset.id, 'REJECTED'));
     });
   }
 
@@ -407,6 +427,24 @@ document.addEventListener('DOMContentLoaded', () => {
       list = list.filter((r) => (r.status || '').toUpperCase() === target);
     }
     renderBorrowTable(list);
+  }
+
+  function renderBorrowAssetOptions(term = '') {
+    if (!borrowAsset) return;
+    const normalized = term.trim().toLowerCase();
+    const source = assetsCache || [];
+    const filtered = normalized
+      ? source.filter((a) =>
+          (a.asset_tag || '').toLowerCase().includes(normalized) ||
+          (a.name || '').toLowerCase().includes(normalized)
+        )
+      : source;
+    const availableFirst = filtered.sort((a, b) => ((b.status === 'available') - (a.status === 'available')));
+    const current = borrowAsset.value;
+    borrowAsset.innerHTML = '<option value=\"\">Select asset</option>' + availableFirst.map((a) => `
+      <option value=\"${a.id}\">${a.asset_tag || '-'} — ${a.name || ''} (${a.status || '-'})</option>
+    `).join('');
+    if (current) borrowAsset.value = current;
   }
 
   function renderMaintenanceTable(list) {
@@ -681,6 +719,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const list = (data && data.data && data.data.assets) || data.assets || [];
       assetsCache = list;
       refreshAssetFilterOptions();
+      renderBorrowAssetOptions();
       applyAssetFilters();
     } catch (err) {
       console.error('Failed to load assets', err);
@@ -1004,6 +1043,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (borrowClose) borrowClose.addEventListener('click', closeBorrowModal);
   if (borrowCancel) borrowCancel.addEventListener('click', closeBorrowModal);
   if (borrowModal) borrowModal.addEventListener('click', (e) => { if (e.target === borrowModal) closeBorrowModal(); });
+  if (borrowAssetSearch) {
+    borrowAssetSearch.addEventListener('input', () => renderBorrowAssetOptions(borrowAssetSearch.value));
+  }
   if (borrowForm) {
     borrowForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1233,6 +1275,19 @@ document.addEventListener('DOMContentLoaded', () => {
       closeSidebar();
     });
   });
+
+  async function updateRequestStatus(id, status) {
+    if (!id) return;
+    try {
+      await apiFetch(`/api/requests/${id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+      });
+      await fetchDashboard();
+    } catch (err) {
+      alert(err.message || 'Failed to update request');
+    }
+  }
 
   // Reset requests handling
   const renderResets = () => {

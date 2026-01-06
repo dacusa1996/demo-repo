@@ -330,12 +330,34 @@ body {
   border-color: var(--accent-2);
   color: #fff;
 }
+.btn-req-approve,
+.pill-btn[data-action="approve"] {
+  background: rgba(22, 163, 74, 0.12);
+  border-color: rgba(22, 163, 74, 0.35);
+  color: #166534;
+}
+.btn-req-approve:hover,
+.pill-btn[data-action="approve"]:hover {
+  background: #0f7a32;
+  border-color: #0f7a32;
+  color: #fff;
+}
 .pill-btn.danger {
   background: rgba(185, 28, 28, 0.1);
   border-color: rgba(185, 28, 28, 0.25);
   color: #b91c1c;
 }
 .pill-btn.danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+.pill-btn[data-action="reject"] {
+  background: rgba(185, 28, 28, 0.1);
+  border-color: rgba(185, 28, 28, 0.35);
+  color: #b91c1c;
+}
+.pill-btn[data-action="reject"]:hover {
   background: #b91c1c;
   border-color: #b91c1c;
   color: #fff;

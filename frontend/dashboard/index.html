@@ -191,11 +191,11 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>ReqID</th><th>Asset</th><th>Borrower</th><th>Dept</th><th>Due</th><th>Status</th>
+                      <th>ReqID</th><th>Asset</th><th>Borrower</th><th>Dept</th><th>Due</th><th>Status</th><th>Action</th>
                     </tr>
                   </thead>
                   <tbody id="borrow-table">
-                    <tr><td colspan="6">Hook to requests list here.</td></tr>
+                    <tr><td colspan="7">Hook to requests list here.</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -378,6 +378,7 @@
           <div class="form-grid">
             <label class="form-field">
               <span class="label">Asset</span>
+              <input type="text" id="borrow-asset-search" placeholder="Search asset tag or name" />
               <select id="borrow-asset" required></select>
             </label>
             <label class="form-field">
