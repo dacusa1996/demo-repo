@@ -29,8 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Build API base from current host so it survives IP changes
   // Use the same port as other frontends (53308) unless overridden
-  const apiPort = '53308';
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:${apiPort}`;
+  const apiBase = 'https://proscribable-ann-galleried.ngrok-free.dev';
   const apiFetch = async (path, options = {}) => {
     const headers = Object.assign(
       { 'Content-Type': 'application/json' },

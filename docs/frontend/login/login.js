@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const forgotEmail = document.getElementById('forgot-email');
   const forgotMsg = document.getElementById('forgot-msg');
   // Build API base from current host so it works across IP changes/LAN
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://proscribable-ann-galleried.ngrok-free.dev';
   const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('admas-updates') : null;
 
   const openForgot = () => {

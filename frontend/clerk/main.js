@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- api helper ---
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://proscribable-ann-galleried.ngrok-free.dev';
   const apiFetch = async (path, options = {}) => {
     const res = await fetch(`${apiBase}${path}`, {
       ...options,
