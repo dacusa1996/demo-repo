@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pEmail = document.getElementById('p-email');
   const pRole = document.getElementById('p-role');
   const pDept = document.getElementById('p-dept');
+  const welcomeTitle = document.getElementById('welcome-title');
 
   const navItems = document.querySelectorAll('.nav-item[data-panel]');
   const panels = document.querySelectorAll('.content-panel');
@@ -91,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (userNameEl) userNameEl.textContent = user.name || 'Dept Head';
   if (userDeptEl) userDeptEl.textContent = `Department: ${user.department || '-'}`;
   if (headerSub) headerSub.textContent = `Dept Head (${user.department || '-'})`;
+  if (welcomeTitle) welcomeTitle.textContent = `Hi, ${user.name || 'Dept Head'}`;
   if (logoutBtn) logoutBtn.addEventListener('click', () => {
     scopedRemove('admas_user');
     scopedRemove('admas_token');
@@ -165,12 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderKPIs = (pendingList, approvedList, rejectedList) => {
     const borrowedNow = deptAssets.filter((a) => (a.status || '').toLowerCase() === 'borrowed').length;
     const underMaint = deptAssets.filter((a) => (a.status || '').toLowerCase().includes('maint')).length;
+    const overdue = viewRequests.filter((r) => {
+      const status = (r.status || '').toUpperCase();
+      if (status !== 'ISSUED' && status !== 'BORROWED') return false;
+      if (!r.expected_return) return false;
+      const due = new Date(r.expected_return);
+      if (Number.isNaN(due.getTime())) return false;
+      const today = new Date(); today.setHours(0,0,0,0);
+      return due < today;
+    }).length;
     const totalMonth = allRequests.length;
     if (kpiPending) kpiPending.textContent = pendingList.length;
     if (kpiApproved) kpiApproved.textContent = approvedList.length;
     if (kpiRejected) kpiRejected.textContent = rejectedList.length;
-    if (kpiBorrowed) kpiBorrowed.textContent = borrowedNow;
-    if (kpiOverdue) kpiOverdue.textContent = underMaint;
+    if (kpiBorrowed) kpiBorrowed.textContent = underMaint;
+    if (kpiOverdue) kpiOverdue.textContent = overdue;
     if (kpiMonth) kpiMonth.textContent = `${totalMonth} req`;
   };
 
@@ -310,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rows = [
       { key: 'OVERDUE', label: 'Overdue assets', count: overdueCount },
       { key: 'WAITING', label: 'Requests waiting > 48 hours', count: waitingCount },
-      { key: 'MAINT', label: 'Assets under maintenance', count: maintCount },
+      { key: 'MAINT', label: 'Asset maintenance', count: maintCount },
     ];
     const filtered = currentRiskTab === 'ALL' ? rows : rows.filter((r) => r.key === currentRiskTab);
     if (!filtered.length) {
@@ -370,9 +381,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderActivity = () => {
     const targets = [activityBodyDash, activityBody];
-    const recent = viewRequests
-      .filter((r) => ['APPROVED', 'REJECTED'].includes((r.status || '').toUpperCase()))
-      .sort((a, b) => (b.id || 0) - (a.id || 0))
+    const stamp = (r) => r.return_date || r.issued_at || r.approved_at || r.request_date || '';
+    const recent = [...viewRequests]
+      .sort((a, b) => new Date(stamp(b)) - new Date(stamp(a)))
       .slice(0, 20);
     targets.forEach((body) => {
       if (!body) return;
@@ -384,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
       recent.forEach((r) => {
         body.innerHTML += `
           <tr>
-            <td>${fmtDate(r.request_date)}</td>
+            <td>${fmtDate(stamp(r))}</td>
             <td>${(r.status || '').toUpperCase()}</td>
             <td>${r.asset_tag || r.asset_name || '-'}</td>
             <td>${r.id ? `REQ-${r.id}` : '-'}</td>
@@ -468,11 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json().catch(() => null);
       if (!res.ok || !data) throw new Error((data && data.error) || 'Failed to load maintenance');
       const rows = (data.data && data.data.maintenance) || data.maintenance || [];
-      const deptMap = new Map(deptAssets.map((a) => [Number(a.id), (a.department || '').toLowerCase().trim()]));
-      maintenanceLogs = rows.filter((m) => {
-        const dep = deptMap.get(Number(m.asset_id));
-        return !deptLower || dep === deptLower;
-      }).map((m) => ({
+      // Show all maintenance items (no department filtering) to avoid hiding valid rows
+      maintenanceLogs = rows.map((m) => ({
         ...m,
         logged_by_name: m.reported_by_name || m.logged_by || ''
       }));

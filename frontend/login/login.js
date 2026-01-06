@@ -52,8 +52,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const form = document.getElementById('login-form');
   const msg = document.getElementById('message');
+  const forgotLink = document.getElementById('forgot-link');
+  const forgotModal = document.getElementById('forgot-modal');
+  const forgotCancel = document.getElementById('forgot-cancel');
+  const forgotForm = document.getElementById('forgot-form');
+  const forgotEmail = document.getElementById('forgot-email');
+  const forgotMsg = document.getElementById('forgot-msg');
   // Build API base from current host so it works across IP changes/LAN
   const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('admas-updates') : null;
+
+  const openForgot = () => {
+    if (!forgotModal) return;
+    forgotModal.classList.add('open');
+    forgotModal.setAttribute('aria-hidden', 'false');
+    if (forgotEmail) forgotEmail.focus();
+  };
+  const closeForgot = () => {
+    if (!forgotModal) return;
+    forgotModal.classList.remove('open');
+    forgotModal.setAttribute('aria-hidden', 'true');
+    if (forgotMsg) forgotMsg.textContent = '';
+    if (forgotForm) forgotForm.reset();
+  };
+
+  if (forgotLink) forgotLink.addEventListener('click', (e) => { e.preventDefault(); openForgot(); });
+  if (forgotCancel) forgotCancel.addEventListener('click', closeForgot);
+  if (forgotModal) {
+    forgotModal.addEventListener('click', (e) => {
+      if (e.target === forgotModal) closeForgot();
+    });
+  }
+
+  if (forgotForm) {
+    forgotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!forgotEmail) return;
+      const email = forgotEmail.value.trim().toLowerCase();
+      if (!email) {
+        if (forgotMsg) forgotMsg.textContent = 'Please enter an email.';
+        return;
+      }
+      if (forgotMsg) { forgotMsg.textContent = 'Sending...'; forgotMsg.style.color = ''; }
+      try {
+        const res = await fetch(`${apiBase}/api/auth/forgot`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json().catch(() => null);
+        if (res.ok && data && data.success !== false) {
+          if (forgotMsg) { forgotMsg.textContent = 'Request sent to admin.'; forgotMsg.style.color = 'green'; }
+          if (channel) channel.postMessage({ type: 'reset-requested', email });
+          setTimeout(closeForgot, 800);
+        } else {
+          const errText = (data && data.error) || 'Could not submit request.';
+          if (forgotMsg) { forgotMsg.textContent = errText; forgotMsg.style.color = '#b91c1c'; }
+        }
+      } catch (err) {
+        if (forgotMsg) { forgotMsg.textContent = 'Network error.'; forgotMsg.style.color = '#b91c1c'; }
+      }
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

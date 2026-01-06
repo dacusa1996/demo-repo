@@ -42,6 +42,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const userNameEl = document.getElementById('user-name');
   const userRoleEl = document.getElementById('user-role');
   const profileLink = document.getElementById('profile-link');
+  const profileModal = document.getElementById('profile-modal');
+  const profileClose = document.getElementById('profile-close');
+  const pName = document.getElementById('p-name');
+  const pEmail = document.getElementById('p-email');
+  const pRole = document.getElementById('p-role');
+  const pDept = document.getElementById('p-dept');
   const logoutBtn = document.getElementById('logout-btn');
   const topSearch = document.getElementById('top-search');
   const topSearchResults = document.getElementById('top-search-results');
@@ -88,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const activityReason = document.getElementById('activity-reason');
   const navItems = document.querySelectorAll('.nav-item[data-panel]');
   const panels = document.querySelectorAll('.content-panel');
+  const welcomeTitle = document.getElementById('welcome-title');
 
   // new request modal
   const newReqBtn = document.getElementById('new-request-btn');
@@ -138,7 +145,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- header ---
   if (userNameEl) userNameEl.textContent = user.name || 'Clerk';
   if (userRoleEl) userRoleEl.textContent = user.department ? `Dept: ${user.department}` : 'Dept: -';
+  if (welcomeTitle) welcomeTitle.textContent = `Hi, ${user.name || 'Clerk'}`;
   if (profileLink) profileLink.title = user.name || 'Profile';
+  if (profileLink) {
+    profileLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (profileModal) {
+        if (pName) pName.textContent = user.name || '-';
+        if (pEmail) pEmail.textContent = user.email || '-';
+        if (pRole) pRole.textContent = user.role || '-';
+        if (pDept) pDept.textContent = user.department || '-';
+        profileModal.classList.add('open');
+        document.body.classList.add('modal-open');
+      }
+    });
+  }
+  if (profileModal) {
+    profileModal.addEventListener('click', (e) => {
+      if (e.target === profileModal) {
+        profileModal.classList.remove('open');
+        document.body.classList.remove('modal-open');
+      }
+    });
+  }
+  if (profileClose) {
+    profileClose.addEventListener('click', () => {
+      if (profileModal) profileModal.classList.remove('open');
+      document.body.classList.remove('modal-open');
+    });
+  }
   if (logoutBtn) logoutBtn.addEventListener('click', () => {
     removeScoped('admas_token');
     removeScoped('admas_user');
@@ -279,7 +314,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const renderActivity = () => {
     if (!activityBody) return;
     activityBody.innerHTML = '';
-    const recent = [...requests].sort((a, b) => (b.id || 0) - (a.id || 0)).slice(0, 8);
+    const stamp = (r) => r.return_date || r.issued_at || r.approved_at || r.request_date || '';
+    const statusLabel = (s) => {
+      const v = (s || '').toUpperCase();
+      if (v === 'PENDING') return 'Requested';
+      if (v === 'APPROVED') return 'Approved';
+      if (v === 'REJECTED') return 'Rejected';
+      if (v === 'ISSUED') return 'Issued';
+      if (v.startsWith('RETURN')) return 'Returned';
+      if (v === 'CANCELLED') return 'Cancelled';
+      return v || '-';
+    };
+    const recent = [...requests]
+      .sort((a, b) => new Date(stamp(b)) - new Date(stamp(a)))
+      .slice(0, 8);
     if (!recent.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
@@ -291,9 +339,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     recent.forEach((r) => {
       const tr = document.createElement('tr');
+      const dateVal = stamp(r);
       tr.innerHTML = `
-        <td>${fmtDate(r.request_date)}</td>
-        <td>${(r.status || '').toUpperCase()}</td>
+        <td>${fmtDate(dateVal)}</td>
+        <td>${statusLabel(r.status)}</td>
         <td>${r.asset_tag || r.asset_name || '-'}</td>
         <td>${r.id ? `REQ-${r.id}` : '-'}</td>
         <td><button class="pill-btn slim" data-act-detail="${r.id || ''}">View</button></td>
@@ -326,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     rows.forEach((r) => {
       const tr = document.createElement('tr');
-      const date = fmtDate(r.request_date || r.approved_at || r.issued_at || r.return_date);
+      const date = fmtDate(r.return_date || r.issued_at || r.approved_at || r.request_date);
       tr.innerHTML = `
         <td>${date}</td>
         <td>${statusAction(r.status)}</td>
@@ -377,7 +426,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!rows.length) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 7;
+      td.colSpan = 6;
       td.textContent = 'No issued/borrowed items.';
       tr.appendChild(td);
       issuedBody.appendChild(tr);
@@ -390,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${r.asset_tag || r.asset_name || '-'}</td>
         <td>${r.borrower_name || '-'}</td>
         <td>${r.borrower_department || '-'}</td>
-        <td>-</td>
         <td>${fmtDate(r.expected_return)}</td>
         <td><button class="pill-btn slim" data-action="return" data-id="${r.id}">Return</button></td>
       `;
@@ -504,11 +552,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const statusUp = (m.status || '').toUpperCase();
       if (statusUp === 'PENDING' || statusUp === 'OPEN') { actionLabel = 'Start'; actionAttr = 'data-act="start"'; }
       else if (statusUp === 'IN_PROGRESS') { actionLabel = 'Complete'; actionAttr = 'data-act="complete"'; }
+      const loggedBy =
+        m.logged_by_name ||
+        m.reported_by_name ||
+        (m.logged_by === user.id ? (user.name || 'You') : m.logged_by) ||
+        '-';
       tr.innerHTML = `
         <td>${m.asset_tag || m.asset || '-'}</td>
         <td>${m.issue || '-'}</td>
         <td>${statusUp || '-'}</td>
-        <td>${m.logged_by || '-'}</td>
+        <td>${loggedBy}</td>
         <td>${actionAttr ? `<button class="pill-btn slim" data-maint-id="${m.id || ''}" ${actionAttr}>${actionLabel}</button>` : '-'}</td>
       `;
       maintenanceBody.appendChild(tr);
@@ -867,12 +920,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (activityDue) activityDue.textContent = fmtDate(r.expected_return);
     if (activityReason) activityReason.textContent = r.reason || r.comment || '-';
     activityModal.classList.add('open');
+    document.body.classList.add('modal-open');
   };
   const closeActivityModal = () => {
     if (activityModal) activityModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
   };
   if (activityClose) activityClose.addEventListener('click', closeActivityModal);
   if (activityModal) activityModal.addEventListener('click', (e) => { if (e.target === activityModal) closeActivityModal(); });
+
+  if (activityBody) {
+    activityBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-act-detail]');
+      if (!btn) return;
+      const id = Number(btn.dataset.actDetail);
+      const r = requests.find((x) => Number(x.id) === id);
+      if (r) openActivityModal(r);
+    });
+  }
 
   if (myActivityBody) {
     myActivityBody.addEventListener('click', (e) => {

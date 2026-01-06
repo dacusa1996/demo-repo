@@ -26,7 +26,7 @@
         <input id="password" name="password" type="password" required autocomplete="current-password" />
 
         <div class="helpers">
-          <a href="#">Forgot?</a>
+          <a id="forgot-link" href="#">Forgot?</a>
         </div>
 
         <button type="submit">Log in</button>
@@ -34,6 +34,25 @@
 
       <div id="message" role="status" aria-live="polite"></div>
     </main>
+
+    <div id="forgot-modal" class="modal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Reset Request</h3>
+        </div>
+        <form id="forgot-form">
+          <label class="form-field full">
+            <span class="label">Email</span>
+            <input id="forgot-email" type="email" required placeholder="Enter your email" />
+          </label>
+          <div id="forgot-msg" class="muted"></div>
+          <div class="actions modal-actions" style="margin-top:10px;">
+            <button type="button" class="ghost-btn slim" id="forgot-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script src="login.js"></script>
   </body>

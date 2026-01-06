@@ -24,7 +24,10 @@
           <input id="top-search" class="top-search" type="search" placeholder="Search assets / users / requests..." autocomplete="off" />
           <div id="top-search-results" class="search-results" hidden></div>
         </div>
-          <button class="icon-btn" type="button" title="Notifications">&#128276;</button>
+          <button id="notify-btn" class="icon-btn badge-btn" type="button" title="Notifications">
+            &#128276;
+            <span id="notify-badge" class="badge" hidden></span>
+          </button>
           <div class="user-box">
             <a id="profile-link" class="profile" href="#" title="Profile">&#128100;</a>
             <div class="user-meta">
@@ -507,6 +510,51 @@
             <p id="p-dept" class="value">-</p>
           </div>
         </div>
+      </div>
+    </div>
+    <div id="reset-modal" class="modal">
+      <div class="modal-card large">
+        <div class="modal-head">
+          <h3>Password Reset Requests</h3>
+          <button id="reset-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Requested</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="reset-body">
+              <tr><td colspan="5">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="reset-set-modal" class="modal">
+      <div class="modal-card">
+        <div class="modal-head">
+          <h3>Set New Password</h3>
+          <button id="reset-set-close" class="ghost-btn slim" type="button">Close</button>
+        </div>
+        <form id="reset-set-form">
+          <input type="hidden" id="reset-set-id" />
+          <p id="reset-set-email" class="muted" style="margin-top:0;margin-bottom:8px;"></p>
+          <label class="form-field full">
+            <span class="label">New Password</span>
+            <input id="reset-set-password" type="password" minlength="8" required />
+          </label>
+          <div id="reset-set-msg" class="muted"></div>
+          <div class="actions modal-actions" style="margin-top:10px;">
+            <button type="button" class="ghost-btn slim" id="reset-set-cancel">Cancel</button>
+            <button type="submit" class="pill-btn primary slim">Save</button>
+          </div>
+        </form>
       </div>
     </div>
     <script src="./dashboard.js"></script>

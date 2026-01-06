@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.removeItem(`${key}_${tabId}`);
     localStorage.removeItem(key);
   };
+  const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('admas-updates') : null;
   const userRaw = getScoped('admas_user');
   const token = getScoped('admas_token');
 
@@ -27,7 +28,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Build API base from current host so it survives IP changes
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  // Use the same port as other frontends (53308) unless overridden
+  const apiPort = '53308';
+  const apiBase = `${window.location.protocol}//${window.location.hostname}:${apiPort}`;
   const apiFetch = async (path, options = {}) => {
     const headers = Object.assign(
       { 'Content-Type': 'application/json' },
@@ -107,6 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const topSearch = document.getElementById('top-search');
   const topSearchResults = document.getElementById('top-search-results');
   const navItems = document.querySelectorAll('.nav-item');
+  const notifyBtn = document.getElementById('notify-btn');
+  const notifyBadge = document.getElementById('notify-badge');
+  const resetModal = document.getElementById('reset-modal');
+  const resetClose = document.getElementById('reset-close');
+  const resetBody = document.getElementById('reset-body');
+  const resetSetModal = document.getElementById('reset-set-modal');
+  const resetSetClose = document.getElementById('reset-set-close');
+  const resetSetCancel = document.getElementById('reset-set-cancel');
+  const resetSetForm = document.getElementById('reset-set-form');
+  const resetSetId = document.getElementById('reset-set-id');
+  const resetSetEmail = document.getElementById('reset-set-email');
+  const resetSetPassword = document.getElementById('reset-set-password');
+  const resetSetMsg = document.getElementById('reset-set-msg');
   const panels = {
     dashboard: document.getElementById('panel-dashboard'),
     assets: document.getElementById('panel-assets'),
@@ -130,6 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const borrowChips = document.querySelectorAll('#panel-borrowing .chip');
   let requestsCache = [];
   let currentBorrowFilter = '';
+  let resetCache = [];
 
   userNameEl.textContent = user.name || 'User';
   welcomeTitleEl.textContent = `Hi, ${user.name || 'there'}!`;
@@ -161,6 +178,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (profileClose) {
     profileClose.addEventListener('click', () => profileModal.classList.remove('open'));
   }
+  const openResetModal = () => {
+    if (resetModal) {
+      resetModal.classList.add('open');
+      document.body.classList.add('modal-open');
+    }
+  };
+  const closeResetModal = () => {
+    if (resetModal) resetModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  };
+  const openResetSetModal = (id, email) => {
+    if (!resetSetModal) return;
+    if (resetSetId) resetSetId.value = id || '';
+    if (resetSetEmail) resetSetEmail.textContent = email || '';
+    if (resetSetPassword) resetSetPassword.value = '';
+    if (resetSetMsg) resetSetMsg.textContent = '';
+    resetSetModal.classList.add('open');
+    document.body.classList.add('modal-open');
+    if (resetSetPassword) resetSetPassword.focus();
+  };
+  const closeResetSetModal = () => {
+    if (resetSetModal) resetSetModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  };
 
   const closeSidebar = () => document.body.classList.remove('sidebar-open');
   if (menuToggle) {
@@ -231,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
       pendingBody.appendChild(row);
     });
   }
-
   let assetsCache = [];
   let maintenanceCache = [];
   let usersCache = [];
@@ -1194,12 +1234,144 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Reset requests handling
+  const renderResets = () => {
+    if (!resetBody) return;
+    resetBody.innerHTML = '';
+    if (!resetCache.length) {
+      const row = document.createElement('tr');
+      const cell = document.createElement('td');
+      cell.colSpan = 5;
+      cell.textContent = 'No pending reset requests.';
+      row.appendChild(cell);
+      resetBody.appendChild(row);
+    } else {
+      resetCache.forEach((r) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${r.id}</td>
+          <td>${r.email}</td>
+          <td>${r.role || '-'}</td>
+          <td>${r.created_at ? new Date(r.created_at).toISOString().slice(0,10) : '-'}</td>
+          <td><button class="pill-btn slim primary" data-reset-id="${r.id}" data-reset-email="${r.email}">Set Password</button></td>
+        `;
+        resetBody.appendChild(row);
+      });
+    }
+    if (notifyBadge) {
+      if (resetCache.length) {
+        notifyBadge.textContent = resetCache.length;
+        notifyBadge.hidden = false;
+      } else {
+        notifyBadge.hidden = true;
+      }
+    }
+  };
+
+  async function fetchResets() {
+    try {
+      const data = await apiFetch('/api/auth/forgot');
+      resetCache = (data && data.data && data.data.requests) || [];
+      renderResets();
+    } catch (err) {
+      if (resetBody) resetBody.innerHTML = `<tr><td colspan="5">Failed to load reset requests</td></tr>`;
+    }
+  }
+
+  if (notifyBtn) {
+    notifyBtn.addEventListener('click', async () => {
+      await fetchResets();
+      if (resetModal) resetModal.classList.add('open');
+      document.body.classList.add('modal-open');
+    });
+  }
+  if (resetClose) resetClose.addEventListener('click', () => {
+    if (resetModal) resetModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  });
+  if (resetModal) {
+    resetModal.addEventListener('click', (e) => {
+      if (e.target === resetModal) {
+        resetModal.classList.remove('open');
+        document.body.classList.remove('modal-open');
+      }
+    });
+  }
+  if (resetBody) {
+    resetBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-reset-id]');
+      if (!btn) return;
+      const id = btn.dataset.resetId;
+      const email = btn.dataset.resetEmail || '';
+      if (resetSetId) resetSetId.value = id || '';
+      if (resetSetEmail) resetSetEmail.textContent = email;
+      if (resetSetPassword) resetSetPassword.value = '';
+      if (resetSetMsg) resetSetMsg.textContent = '';
+      if (resetSetModal) resetSetModal.classList.add('open');
+      document.body.classList.add('modal-open');
+    });
+  }
+  if (resetSetClose) resetSetClose.addEventListener('click', () => {
+    if (resetSetModal) resetSetModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  });
+  if (resetSetCancel) resetSetCancel.addEventListener('click', () => {
+    if (resetSetModal) resetSetModal.classList.remove('open');
+    document.body.classList.remove('modal-open');
+  });
+  if (resetSetModal) {
+    resetSetModal.addEventListener('click', (e) => {
+      if (e.target === resetSetModal) {
+        resetSetModal.classList.remove('open');
+        document.body.classList.remove('modal-open');
+      }
+    });
+  }
+  if (resetSetForm) {
+    resetSetForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = resetSetId ? resetSetId.value : '';
+      const password = resetSetPassword ? resetSetPassword.value : '';
+      if (!id || !password) return;
+      if (resetSetMsg) { resetSetMsg.textContent = 'Saving...'; resetSetMsg.style.color = ''; }
+      try {
+        await apiFetch(`/api/auth/forgot/${id}`, { method: 'PATCH', body: JSON.stringify({ password }) });
+        if (resetSetMsg) { resetSetMsg.textContent = 'Updated'; resetSetMsg.style.color = 'green'; }
+        await fetchResets();
+        setTimeout(() => {
+          if (resetSetModal) resetSetModal.classList.remove('open');
+          document.body.classList.remove('modal-open');
+          // after closing, update badge on next tick
+          if (resetCache && notifyBadge) {
+            if (resetCache.length) {
+              notifyBadge.textContent = resetCache.length;
+              notifyBadge.hidden = false;
+            } else {
+              notifyBadge.hidden = true;
+            }
+          }
+        }, 150);
+      } catch (err) {
+        if (resetSetMsg) { resetSetMsg.textContent = err.message || 'Failed'; resetSetMsg.style.color = '#b91c1c'; }
+      }
+    });
+  }
+
+  if (channel) {
+    channel.addEventListener('message', (evt) => {
+      if (!evt || !evt.data || !evt.data.type) return;
+      if (evt.data.type === 'requests-updated') fetchDashboard();
+      if (evt.data.type === 'reset-requested') fetchResets();
+    });
+  }
+
   setActivePanel('dashboard');
 
   fetchDashboard();
   fetchMaintenancePanel();
   fetchAssetsPanel();
   fetchUsersPanel();
+  fetchResets();
 });
 
 
