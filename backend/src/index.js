@@ -15,6 +15,7 @@ const app = express();
 const allowedOrigins = [
   'https://dacusa1996.github.io',
   'https://proscribable-ann-galleried.ngrok-free.dev',
+  'https://whole-baboons-wash.loca.lt',
   'http://localhost:3308',
   'http://127.0.0.1:3308',
   'http://localhost:53308',
