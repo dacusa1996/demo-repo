@@ -147,11 +147,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const isFile = window.location.protocol === 'file:';
         const isGhPages = window.location.hostname.includes('github.io');
-        const baseRoot = isFile
-          ? 'file:///C:/codin/final%203/final-project-admas/frontend'
-          : isGhPages
-            ? `${window.location.origin}/demo-repo/frontend`
-            : `${window.location.origin}/frontend`;
+        const baseRoot = (() => {
+          if (isFile) return 'file:///C:/codin/final%203/final-project-admas/frontend';
+          if (isGhPages) {
+            // Assume repo name is the first path segment
+            const segs = window.location.pathname.split('/').filter(Boolean);
+            const repo = segs.length ? segs[0] : '';
+            return repo ? `${window.location.origin}/${repo}/frontend` : `${window.location.origin}/frontend`;
+          }
+          return `${window.location.origin}/frontend`;
+        })();
         const roleRaw = (data.data.user.role || '').toLowerCase();
         const roleKey = roleRaw.replace(/[\s_-]+/g, '');
         const tabQuery = `?tabId=${encodeURIComponent(tabId)}`;
