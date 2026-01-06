@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- api helper ---
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
   const apiFetch = async (path, options = {}) => {
     const res = await fetch(`${apiBase}${path}`, {
       ...options,

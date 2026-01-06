@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Build API base from current host so it survives IP changes
   // Use the same port as other frontends (53308) unless overridden
   const apiPort = '53308';
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:${apiPort}`;
+  const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
   const apiFetch = async (path, options = {}) => {
     const headers = Object.assign(
       { 'Content-Type': 'application/json' },
@@ -1373,6 +1373,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchUsersPanel();
   fetchResets();
 });
+
 
 
 

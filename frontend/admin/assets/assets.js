@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const isFile = window.location.protocol === 'file:';
   const baseRoot = isFile ? 'file:///C:/codin/final%203/final-project-admas/frontend' : `${window.location.origin}/frontend`;
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
 
   const userNameEl = document.getElementById('user-name');
   const userRoleEl = document.getElementById('user-role');

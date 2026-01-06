@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Build API base from current host so it works across IP changes
-const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
   const userNameEl = document.getElementById('user-name');
   const userRoleEl = document.getElementById('user-role');
   const usersBody = document.getElementById('users-body');

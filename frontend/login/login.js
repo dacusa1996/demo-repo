@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const forgotEmail = document.getElementById('forgot-email');
   const forgotMsg = document.getElementById('forgot-msg');
   // Build API base from current host so it works across IP changes/LAN
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
   const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('admas-updates') : null;
 
   const openForgot = () => {

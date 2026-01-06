@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `${baseRoot}/login/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;
   }
-  const apiBase = `${window.location.protocol}//${window.location.hostname}:53308`;
+  const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
 
   // elements
   const userNameEl = document.getElementById('user-name');
