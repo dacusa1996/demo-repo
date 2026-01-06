@@ -1,0 +1,6 @@
+/* Root styles moved to /login/styles.css — this file is a minimal stub to keep the old path working.
+   The canonical styles are under frontend/login/styles.css. */
+
+/* Minimal fallback css */
+body{font-family:Inter,Segoe UI,Arial,sans-serif;margin:0;padding:20px;background:#f3f7fb}
+
