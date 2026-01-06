@@ -11,7 +11,27 @@ const dashboardRoutes = require('./routes/dashboard');
 const maintenanceRoutes = require('./routes/maintenance');
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = [
+  'https://dacusa1996.github.io',
+  'https://proscribable-ann-galleried.ngrok-free.dev',
+  'http://localhost:3308',
+  'http://127.0.0.1:3308',
+  'http://localhost:53308',
+  'http://127.0.0.1:53308'
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  }
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(bodyParser.json());
 
 app.get('/health', (req, res) => res.json({ ok: true, time: new Date() }));

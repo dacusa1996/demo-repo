@@ -146,9 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.textContent = 'Login successful. Redirecting...';
 
         const isFile = window.location.protocol === 'file:';
+        const isGhPages = window.location.hostname.includes('github.io');
         const baseRoot = isFile
           ? 'file:///C:/codin/final%203/final-project-admas/frontend'
-          : `${window.location.origin}/frontend`;
+          : isGhPages
+            ? `${window.location.origin}/demo-repo/frontend`
+            : `${window.location.origin}/frontend`;
         const roleRaw = (data.data.user.role || '').toLowerCase();
         const roleKey = roleRaw.replace(/[\s_-]+/g, '');
         const tabQuery = `?tabId=${encodeURIComponent(tabId)}`;
