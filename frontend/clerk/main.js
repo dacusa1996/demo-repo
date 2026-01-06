@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- api helper ---
-  const apiBase = 'https://whole-baboons-wash.loca.lt';
+  const apiBase = 'https://nasty-squids-turn.loca.lt';
   const apiFetch = async (path, options = {}) => {
     const res = await fetch(`${apiBase}${path}`, {
       ...options,

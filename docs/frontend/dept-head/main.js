@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = `${baseRoot}/login/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;
   }
-  const apiBase = 'https://whole-baboons-wash.loca.lt';
+  const apiBase = 'https://nasty-squids-turn.loca.lt';
 
   // elements
   const userNameEl = document.getElementById('user-name');

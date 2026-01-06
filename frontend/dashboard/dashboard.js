@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Build API base from current host so it survives IP changes
   // Use the same port as other frontends (53308) unless overridden
-  const apiBase = 'https://whole-baboons-wash.loca.lt';
+  const apiBase = 'https://nasty-squids-turn.loca.lt';
   const apiFetch = async (path, options = {}) => {
     const headers = Object.assign(
       { 'Content-Type': 'application/json' },

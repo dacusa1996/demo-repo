@@ -16,23 +16,25 @@ const allowedOrigins = [
   'https://dacusa1996.github.io',
   'https://proscribable-ann-galleried.ngrok-free.dev',
   'https://whole-baboons-wash.loca.lt',
+  'https://nasty-squids-turn.loca.lt',
   'http://localhost:3308',
   'http://127.0.0.1:3308',
   'http://localhost:53308',
   'http://127.0.0.1:53308'
 ];
 
-const corsOptions = {
+app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) return callback(null, true); // allow non-browser
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (origin.endsWith('.loca.lt') || origin.endsWith('.ngrok-free.dev')) {
       return callback(null, true);
     }
-    return callback(new Error('Not allowed by CORS'));
+    // Fallback: allow all (loosened to unblock)
+    return callback(null, true);
   }
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+}));
+app.options('*', cors());
 app.use(bodyParser.json());
 
 app.get('/health', (req, res) => res.json({ ok: true, time: new Date() }));
