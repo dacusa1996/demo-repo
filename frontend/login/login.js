@@ -145,17 +145,29 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.style.color = 'green';
         msg.textContent = 'Login successful. Redirecting...';
 
-        const isFile = window.location.protocol === 'file:';
-        let baseRoot = 'file:///C:/codin/final%203/final-project-admas/frontend';
-        if (!isFile) {
+        const computeBaseRoot = () => {
+          if (window.location.protocol === 'file:') {
+            return 'file:///C:/codin/final%203/final-project-admas/frontend';
+          }
           const path = window.location.pathname;
           const frontendIndex = path.indexOf('/frontend/');
           if (frontendIndex !== -1) {
-            baseRoot = `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
-          } else {
-            baseRoot = window.location.origin;
+            return `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
           }
-        }
+          const markers = ['/login/', '/dashboard/', '/clerk/', '/dept-head/', '/admin/', '/profile/', '/reports/', '/maintenance/'];
+          let cutIndex = -1;
+          for (const marker of markers) {
+            const idx = path.indexOf(marker);
+            if (idx !== -1 && (cutIndex === -1 || idx < cutIndex)) {
+              cutIndex = idx;
+            }
+          }
+          if (cutIndex !== -1) {
+            return `${window.location.origin}${path.slice(0, cutIndex)}`;
+          }
+          return window.location.origin;
+        };
+        const baseRoot = computeBaseRoot();
         const roleRaw = (data.data.user.role || '').toLowerCase();
         const roleKey = roleRaw.replace(/[\s_-]+/g, '');
         const tabQuery = `?tabId=${encodeURIComponent(tabId)}`;

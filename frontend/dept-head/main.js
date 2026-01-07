@@ -5,10 +5,32 @@ document.addEventListener('DOMContentLoaded', () => {
   window.name = tabId;
   const scopedGet = (k) => localStorage.getItem(`${k}_${tabId}`) || localStorage.getItem(k);
   const scopedRemove = (k) => { localStorage.removeItem(`${k}_${tabId}`); localStorage.removeItem(k); };
+  const computeBaseRoot = () => {
+    if (window.location.protocol === 'file:') {
+      return 'file:///C:/codin/final%203/final-project-admas/frontend';
+    }
+    const path = window.location.pathname;
+    const frontendIndex = path.indexOf('/frontend/');
+    if (frontendIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
+    }
+    const markers = ['/login/', '/dashboard/', '/clerk/', '/dept-head/', '/admin/', '/profile/', '/reports/', '/maintenance/'];
+    let cutIndex = -1;
+    for (const marker of markers) {
+      const idx = path.indexOf(marker);
+      if (idx !== -1 && (cutIndex === -1 || idx < cutIndex)) {
+        cutIndex = idx;
+      }
+    }
+    if (cutIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, cutIndex)}`;
+    }
+    return window.location.origin;
+  };
 
   const userRaw = scopedGet('admas_user');
   const token = scopedGet('admas_token');
-  const baseRoot = `${window.location.origin}/frontend`;
+  const baseRoot = computeBaseRoot();
   if (!userRaw || !token) {
     window.location.href = `${baseRoot}/login/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;

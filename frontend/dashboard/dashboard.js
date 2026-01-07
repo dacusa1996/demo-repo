@@ -3,8 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const qpTab = params.get('tabId');
   const tabId = qpTab || window.name || crypto.randomUUID();
   window.name = tabId;
-  const isFile = window.location.protocol === 'file:';
-  const baseRoot = isFile ? 'file:///C:/codin/final%203/final-project-admas/frontend' : `${window.location.origin}/frontend`;
+  const computeBaseRoot = () => {
+    if (window.location.protocol === 'file:') {
+      return 'file:///C:/codin/final%203/final-project-admas/frontend';
+    }
+    const path = window.location.pathname;
+    const frontendIndex = path.indexOf('/frontend/');
+    if (frontendIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
+    }
+    const markers = ['/login/', '/dashboard/', '/clerk/', '/dept-head/', '/admin/', '/profile/', '/reports/', '/maintenance/'];
+    let cutIndex = -1;
+    for (const marker of markers) {
+      const idx = path.indexOf(marker);
+      if (idx !== -1 && (cutIndex === -1 || idx < cutIndex)) {
+        cutIndex = idx;
+      }
+    }
+    if (cutIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, cutIndex)}`;
+    }
+    return window.location.origin;
+  };
+  const baseRoot = computeBaseRoot();
   const getScoped = (key) => localStorage.getItem(`${key}_${tabId}`) || localStorage.getItem(key);
   const removeScoped = (key) => {
     localStorage.removeItem(`${key}_${tabId}`);

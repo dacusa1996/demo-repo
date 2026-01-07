@@ -1,10 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
   const tabId = window.name || crypto.randomUUID();
   window.name = tabId;
+  const computeBaseRoot = () => {
+    if (window.location.protocol === 'file:') {
+      return 'file:///C:/codin/final%203/final-project-admas/frontend';
+    }
+    const path = window.location.pathname;
+    const frontendIndex = path.indexOf('/frontend/');
+    if (frontendIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
+    }
+    const markers = ['/login/', '/dashboard/', '/clerk/', '/dept-head/', '/admin/', '/profile/', '/reports/', '/maintenance/'];
+    let cutIndex = -1;
+    for (const marker of markers) {
+      const idx = path.indexOf(marker);
+      if (idx !== -1 && (cutIndex === -1 || idx < cutIndex)) {
+        cutIndex = idx;
+      }
+    }
+    if (cutIndex !== -1) {
+      return `${window.location.origin}${path.slice(0, cutIndex)}`;
+    }
+    return window.location.origin;
+  };
+  const baseRoot = computeBaseRoot();
   const userRaw = localStorage.getItem(`admas_user_${tabId}`);
   const token = localStorage.getItem(`admas_token_${tabId}`);
   if (!userRaw || !token) {
-    window.location.href = '/login/';
+    window.location.href = `${baseRoot}/login/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;
   }
 
@@ -12,19 +35,16 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     user = JSON.parse(userRaw);
   } catch (err) {
-    window.location.href = '/login/';
+    window.location.href = `${baseRoot}/login/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;
   }
 
   const isAdmin = (user.role || '').toLowerCase() === 'admin';
   if (!isAdmin) {
     alert('Admins only. Redirecting to dashboard.');
-    window.location.href = '/dashboard/';
+    window.location.href = `${baseRoot}/dashboard/index.html?tabId=${encodeURIComponent(tabId)}`;
     return;
   }
-
-  const isFile = window.location.protocol === 'file:';
-  const baseRoot = isFile ? 'file:///C:/codin/final%203/final-project-admas/frontend' : `${window.location.origin}/frontend`;
   const apiBase = 'https://demo-repo-1-9qa0.onrender.com';
 
   const userNameEl = document.getElementById('user-name');
