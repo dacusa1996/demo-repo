@@ -146,9 +146,16 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.textContent = 'Login successful. Redirecting...';
 
         const isFile = window.location.protocol === 'file:';
-        const baseRoot = isFile
-          ? 'file:///C:/codin/final%203/final-project-admas/frontend'
-          : `${window.location.origin}/frontend`;
+        let baseRoot = 'file:///C:/codin/final%203/final-project-admas/frontend';
+        if (!isFile) {
+          const path = window.location.pathname;
+          const frontendIndex = path.indexOf('/frontend/');
+          if (frontendIndex !== -1) {
+            baseRoot = `${window.location.origin}${path.slice(0, frontendIndex + '/frontend'.length)}`;
+          } else {
+            baseRoot = window.location.origin;
+          }
+        }
         const roleRaw = (data.data.user.role || '').toLowerCase();
         const roleKey = roleRaw.replace(/[\s_-]+/g, '');
         const tabQuery = `?tabId=${encodeURIComponent(tabId)}`;
