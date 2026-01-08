@@ -16,8 +16,8 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0,
   enableKeepAlive: true,
-  connectTimeout: 10000,
-  ssl: useSsl ? { rejectUnauthorized: false } : undefined
+  connectTimeout: 20000,
+  ssl: useSsl ? { rejectUnauthorized: false, servername: host } : undefined
 });
 
 module.exports = pool;

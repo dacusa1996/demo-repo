@@ -62,6 +62,8 @@ async function ensureTagMonthDayColumns(conn) {
     await conn.execute("INSERT IGNORE INTO departments (name, code) VALUES (?,?)", ['IT', 'IT']);
     await conn.execute("INSERT IGNORE INTO departments (name, code) VALUES (?,?)", ['Finance', 'FIN']);
     await conn.execute("INSERT IGNORE INTO departments (name, code) VALUES (?,?)", ['HR', 'HR']);
+    await conn.execute("INSERT IGNORE INTO departments (name, code) VALUES (?,?)", ['Marketing', 'MKT']);
+    await conn.execute("INSERT IGNORE INTO departments (name, code) VALUES (?,?)", ['Operations', 'OPS']);
 
     // Create admin user
     const seedPassword = process.env.SEED_ADMIN_PASSWORD || 'Admin123!';
@@ -83,18 +85,24 @@ async function ensureTagMonthDayColumns(conn) {
 
     // Seed placeholder assets (insert ignore to avoid duplicates on rerun)
     const assets = [
-      { tag: 'ADM-IT-LAP-0001', year: 2025, month: 1, day: 12, name: 'Laptop - MacBook Pro 14', category: 'Laptop', dept: 'IT', cond: 'good', status: 'available', location: 'HQ-IT-Desk', desc: 'Developer workstation' },
-      { tag: 'ADM-FIN-PRN-0002', year: 2025, month: 2, day: 8, name: 'Printer - Brother HL-L8360', category: 'Printer', dept: 'Finance', cond: 'good', status: 'available', location: 'Finance Floor', desc: 'Finance shared printer' },
-      { tag: 'ADM-HR-PROJ-0003', year: 2025, month: 3, day: 15, name: 'Projector - BenQ HT3550', category: 'Projector', dept: 'HR', cond: 'good', status: 'borrowed', location: 'HR Training Room', desc: 'Training presentations' },
-      { tag: 'ADM-IT-CAM-0004', year: 2025, month: 4, day: 3, name: 'Camera - Sony A7 IV', category: 'Camera', dept: 'IT', cond: 'good', status: 'maintenance', location: 'Media Cabinet', desc: 'Lens calibration scheduled' },
-      { tag: 'ADM-IT-NET-0005', year: 2025, month: 4, day: 20, name: 'Switch - Juniper EX4300', category: 'Network', dept: 'IT', cond: 'good', status: 'available', location: 'Server Room', desc: 'Core switch stack' },
-      { tag: 'ADM-MKT-CAM-0006', year: 2025, month: 5, day: 6, name: 'Camera - Canon R7', category: 'Camera', dept: 'Marketing', cond: 'good', status: 'available', location: 'Studio Rack', desc: 'Campaign shoots' },
-      { tag: 'ADM-OPS-FURN-0007', year: 2025, month: 5, day: 22, name: 'Desk - Uplift Standing', category: 'Furniture', dept: 'Operations', cond: 'good', status: 'available', location: 'Ops Storage', desc: 'Spare standing desk' },
-      { tag: 'ADM-IT-SVR-0008', year: 2025, month: 6, day: 2, name: 'Server - Dell R740', category: 'Server', dept: 'IT', cond: 'fair', status: 'available', location: 'Data Center', desc: 'Virtualization host' },
-      { tag: 'ADM-HR-LAP-0009', year: 2025, month: 6, day: 18, name: 'Laptop - ThinkPad X1 Carbon', category: 'Laptop', dept: 'HR', cond: 'good', status: 'available', location: 'HR Locker', desc: 'HR field laptop' },
-      { tag: 'ADM-FIN-SCN-0010', year: 2025, month: 7, day: 9, name: 'Scanner - Fujitsu fi-8170', category: 'Scanner', dept: 'Finance', cond: 'good', status: 'available', location: 'Finance Front Desk', desc: 'Invoice scanning' },
-      { tag: 'ADM-OPS-CHA-0011', year: 2025, month: 7, day: 21, name: 'Chair - Herman Miller Aeron', category: 'Furniture', dept: 'Operations', cond: 'good', status: 'available', location: 'Ops Storage', desc: 'Ergo chair spare' },
-      { tag: 'ADM-IT-MON-0012', year: 2025, month: 8, day: 5, name: 'Monitor - LG 34WN80C', category: 'Monitor', dept: 'IT', cond: 'good', status: 'available', location: 'HQ-IT-Desk', desc: 'Ultrawide monitor' }
+      { tag: 'ADM-IT-LAP-0101', year: 2025, month: 1, day: 10, name: 'Laptop - Dell Latitude 7440', category: 'Laptop', dept: 'IT', cond: 'good', status: 'available', location: 'IT Storage', desc: 'Spare engineering laptop' },
+      { tag: 'ADM-IT-MON-0102', year: 2025, month: 1, day: 14, name: 'Monitor - Dell U2723QE', category: 'Monitor', dept: 'IT', cond: 'good', status: 'available', location: 'IT Storage', desc: '4K monitor' },
+      { tag: 'ADM-IT-APS-0103', year: 2025, month: 2, day: 2, name: 'Access Point - Ubiquiti U6-LR', category: 'Network', dept: 'IT', cond: 'good', status: 'maintenance', location: 'Server Room', desc: 'Firmware update pending' },
+      { tag: 'ADM-IT-SVR-0104', year: 2025, month: 2, day: 18, name: 'Server - HPE ProLiant DL360', category: 'Server', dept: 'IT', cond: 'fair', status: 'available', location: 'Data Center', desc: 'Lab virtualization host' },
+      { tag: 'ADM-FIN-PRN-0105', year: 2025, month: 3, day: 4, name: 'Printer - HP LaserJet M506', category: 'Printer', dept: 'Finance', cond: 'good', status: 'available', location: 'Finance Office', desc: 'Shared finance printer' },
+      { tag: 'ADM-FIN-SCN-0106', year: 2025, month: 3, day: 12, name: 'Scanner - Epson DS-870', category: 'Scanner', dept: 'Finance', cond: 'good', status: 'available', location: 'Finance Front Desk', desc: 'Invoice scanning' },
+      { tag: 'ADM-FIN-LAP-0107', year: 2025, month: 4, day: 1, name: 'Laptop - ThinkPad T14s', category: 'Laptop', dept: 'Finance', cond: 'good', status: 'borrowed', location: 'Finance Office', desc: 'CFO travel laptop' },
+      { tag: 'ADM-HR-PRO-0108', year: 2025, month: 4, day: 16, name: 'Projector - Epson EB-2250U', category: 'Projector', dept: 'HR', cond: 'good', status: 'available', location: 'HR Training Room', desc: 'Training projector' },
+      { tag: 'ADM-HR-LAP-0109', year: 2025, month: 4, day: 22, name: 'Laptop - HP EliteBook 840', category: 'Laptop', dept: 'HR', cond: 'good', status: 'available', location: 'HR Locker', desc: 'HR field laptop' },
+      { tag: 'ADM-HR-CHA-0110', year: 2025, month: 5, day: 3, name: 'Chair - Steelcase Series 1', category: 'Furniture', dept: 'HR', cond: 'good', status: 'available', location: 'HR Storage', desc: 'New hire seating' },
+      { tag: 'ADM-MKT-CAM-0111', year: 2025, month: 5, day: 9, name: 'Camera - Canon R8', category: 'Camera', dept: 'Marketing', cond: 'good', status: 'available', location: 'Studio Cabinet', desc: 'Campaign shoots' },
+      { tag: 'ADM-MKT-LGT-0112', year: 2025, month: 5, day: 20, name: 'Lighting - Neewer Panel Kit', category: 'Lighting', dept: 'Marketing', cond: 'good', status: 'available', location: 'Studio Cabinet', desc: 'Photo/video lighting' },
+      { tag: 'ADM-OPS-FUR-0113', year: 2025, month: 6, day: 6, name: 'Desk - Uplift Standing V2', category: 'Furniture', dept: 'Operations', cond: 'good', status: 'available', location: 'Ops Storage', desc: 'Spare standing desk' },
+      { tag: 'ADM-OPS-UPS-0114', year: 2025, month: 6, day: 18, name: 'UPS - APC Smart-UPS 1500', category: 'Power', dept: 'Operations', cond: 'good', status: 'available', location: 'Server Room', desc: 'Backup power unit' },
+      { tag: 'ADM-IT-PHN-0115', year: 2025, month: 7, day: 1, name: 'Phone - iPhone 14', category: 'Mobile', dept: 'IT', cond: 'good', status: 'borrowed', location: 'IT Checkout', desc: 'Test device' },
+      { tag: 'ADM-IT-TBL-0116', year: 2025, month: 7, day: 12, name: 'Tablet - iPad Air', category: 'Tablet', dept: 'IT', cond: 'good', status: 'available', location: 'IT Checkout', desc: 'Demo tablet' },
+      { tag: 'ADM-FIN-FIL-0117', year: 2025, month: 8, day: 2, name: 'Filing Cabinet - 4 Drawer', category: 'Furniture', dept: 'Finance', cond: 'good', status: 'available', location: 'Finance Storage', desc: 'Archive storage' },
+      { tag: 'ADM-HR-MIC-0118', year: 2025, month: 8, day: 14, name: 'Microphone - Rode PodMic', category: 'Audio', dept: 'HR', cond: 'good', status: 'maintenance', location: 'HR Training Room', desc: 'Cable replacement needed' }
     ];
 
     for (const asset of assets) {
