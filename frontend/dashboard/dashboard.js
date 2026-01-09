@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!list.length) {
       const row = document.createElement('tr');
       const td = document.createElement('td');
-      td.colSpan = 6;
+      td.colSpan = 7;
       td.textContent = 'No requests found.';
       row.appendChild(td);
       borrowTableBody.appendChild(row);
@@ -409,6 +409,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     list.forEach((r) => {
       const row = document.createElement('tr');
+      const status = (r.status || '').toUpperCase();
+      let actionCell = '-';
+      if (status === 'PENDING') {
+        actionCell = `
+          <div class="actions actions-pill">
+            <button class="pill-btn slim success btn-req-approve" data-id="${r.id}" type="button">Approve</button>
+            <button class="pill-btn slim danger btn-req-reject" data-id="${r.id}" type="button">Reject</button>
+          </div>
+        `;
+      }
       row.innerHTML = `
         <td>${r.id}</td>
         <td>${r.asset_tag || r.asset_name || '-'}</td>
@@ -416,8 +426,46 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${r.borrower_department || r.department || '-'}</td>
         <td>${r.expected_return || '-'}</td>
         <td>${r.status || '-'}</td>
+        <td>${actionCell}</td>
       `;
       borrowTableBody.appendChild(row);
+    });
+
+    document.querySelectorAll('.btn-req-approve').forEach((btn) => {
+      btn.onclick = async () => {
+        const id = btn.dataset.id;
+        if (!id) return;
+        try {
+          await apiFetch(`/api/requests/${id}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'APPROVED' })
+          });
+          const idx = requestsCache.findIndex((r) => String(r.id) === String(id));
+          if (idx !== -1) requestsCache[idx].status = 'APPROVED';
+          fetchDashboard();
+        } catch (err) {
+          alert(err.message || 'Failed to approve request');
+        }
+      };
+    });
+    document.querySelectorAll('.btn-req-reject').forEach((btn) => {
+      btn.onclick = async () => {
+        const id = btn.dataset.id;
+        if (!id) return;
+        const ok = confirm('Reject this request?');
+        if (!ok) return;
+        try {
+          await apiFetch(`/api/requests/${id}/status`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'REJECTED' })
+          });
+          const idx = requestsCache.findIndex((r) => String(r.id) === String(id));
+          if (idx !== -1) requestsCache[idx].status = 'REJECTED';
+          fetchDashboard();
+        } catch (err) {
+          alert(err.message || 'Failed to reject request');
+        }
+      };
     });
   }
 
