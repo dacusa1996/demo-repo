@@ -288,9 +288,28 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>${item.department}</td>
         <td>${item.date}</td>
         <td>${item.status}</td>
-        <td><button class="pill-btn slim" type="button" disabled>View</button></td>
+        <td><button class="pill-btn slim btn-pending-view" data-id="${item.id}" type="button">View</button></td>
       `;
       pendingBody.appendChild(row);
+    });
+
+    document.querySelectorAll('.btn-pending-view').forEach((btn) => {
+      btn.onclick = () => {
+        const id = btn.dataset.id;
+        const req = (requestsCache || []).find((r) => String(r.id) === String(id));
+        if (!req) return;
+        panels.dashboard && panels.dashboard.classList.remove('active');
+        panels.borrowing && panels.borrowing.classList.add('active');
+        navItems.forEach((n) => n.classList.remove('active'));
+        const targetNav = Array.from(navItems).find((n) => (n.dataset.link || '') === 'borrowing');
+        if (targetNav) targetNav.classList.add('active');
+        currentBorrowFilter = 'PENDING';
+        borrowChips.forEach((c) => {
+          const label = (c.textContent || '').trim().toUpperCase();
+          c.classList.toggle('active', label === 'PENDING');
+        });
+        applyBorrowFilters();
+      };
     });
   }
   let assetsCache = [];
