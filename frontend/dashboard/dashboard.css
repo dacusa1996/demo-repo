@@ -143,6 +143,7 @@ body {
   background: rgba(255,255,255,0.26);
 }
 .menu-toggle { display: none; }
+.menu-toggle svg { display: block; }
 
 .sidebar {
   background: #0ba6df;
