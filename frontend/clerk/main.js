@@ -645,11 +645,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!btn) return;
       const status = (btn.dataset.status || '').toUpperCase();
       const id = btn.dataset.reqId;
-      if (status === 'REJECTED') {
-        const reason = (btn.dataset.reason || '').trim();
-        alert(reason ? `Reason: ${reason}` : 'No reason given');
-        return;
-      }
       if (status === 'PENDING' && btn.dataset.action === 'cancel') {
         if (!confirm('Cancel this pending request?')) return;
         await apiFetch(`/api/requests/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status: 'CANCELLED' }) });
@@ -663,6 +658,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (channel) channel.postMessage({ type: 'requests-updated' });
         return;
       }
+      const req = requests.find((x) => String(x.id) === String(id));
+      if (req) openActivityModal(req);
     });
   }
 

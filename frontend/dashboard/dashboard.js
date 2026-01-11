@@ -165,7 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const maintTableBody = document.getElementById('maint-table');
   const usersTableBody = document.getElementById('users-table');
   const borrowChips = document.querySelectorAll('#panel-borrowing .chip');
+  const maintChips = document.querySelectorAll('#panel-maintenance .chip');
   let requestsCache = [];
+  let currentMaintFilter = '';
   let currentBorrowFilter = '';
   let resetCache = [];
 
@@ -522,6 +524,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function applyMaintenanceFilters() {
+    let list = maintenanceCache || [];
+    if (currentMaintFilter) {
+      const target = currentMaintFilter.toUpperCase();
+      list = list.filter((m) => {
+        const status = (m.status || '').toUpperCase();
+        if (target === 'OPEN') return status === 'OPEN' || status === 'PENDING';
+        if (target === 'IN PROGRESS') return status === 'IN_PROGRESS' || status === 'IN PROGRESS';
+        if (target === 'COMPLETED') return status === 'COMPLETED';
+        return status === target;
+      });
+    }
+    renderMaintenanceTable(list);
+  }
+
   function renderUsersTable(list) {
     if (!usersTableBody) return;
     usersTableBody.innerHTML = '';
@@ -780,7 +797,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const data = await apiFetch('/api/maintenance');
       maintenanceCache = (data && data.data && data.data.maintenance) || data.maintenance || [];
-      renderMaintenanceTable(maintenanceCache);
+      applyMaintenanceFilters();
     } catch (err) {
       maintenanceCache = [];
       if (maintTableBody) maintTableBody.innerHTML = `<tr><td colspan="4">Failed to load maintenance</td></tr>`;
@@ -1084,6 +1101,17 @@ document.addEventListener('DOMContentLoaded', () => {
       borrowChips.forEach((c) => c.classList.remove('active'));
       chip.classList.add('active');
       applyBorrowFilters();
+    });
+  });
+
+  // maintenance status filters
+  maintChips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const status = (chip.textContent || '').trim();
+      currentMaintFilter = status;
+      maintChips.forEach((c) => c.classList.remove('active'));
+      chip.classList.add('active');
+      applyMaintenanceFilters();
     });
   });
 

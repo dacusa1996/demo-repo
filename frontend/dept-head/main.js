@@ -294,17 +294,29 @@ document.addEventListener('DOMContentLoaded', () => {
           : currentRiskTab === 'WAITING'
             ? waitingReqs
             : maintRows;
-      riskHead.innerHTML = `
-        <tr>
-          <th>${currentRiskTab === 'MAINT' ? 'Asset' : 'ReqID'}</th>
-          <th>${currentRiskTab === 'MAINT' ? 'Issue' : 'Asset Tag'}</th>
-          <th>${currentRiskTab === 'MAINT' ? 'Status' : 'Borrower'}</th>
-          <th>${currentRiskTab === 'MAINT' ? 'Logged By' : 'Dept'}</th>
-          <th>${currentRiskTab === 'MAINT' ? 'Action' : 'Due'}</th>
-        </tr>
-      `;
+      if (currentRiskTab === 'MAINT') {
+        riskHead.innerHTML = `
+          <tr>
+            <th>Asset</th>
+            <th>Issue</th>
+            <th>Status</th>
+            <th>Logged By</th>
+          </tr>
+        `;
+      } else {
+        riskHead.innerHTML = `
+          <tr>
+            <th>ReqID</th>
+            <th>Asset Tag</th>
+            <th>Borrower</th>
+            <th>Dept</th>
+            <th>Due</th>
+          </tr>
+        `;
+      }
       if (!list.length) {
-        riskBody.innerHTML = `<tr><td colspan="5">No ${currentRiskTab === 'OVERDUE' ? 'overdue' : currentRiskTab === 'WAITING' ? 'waiting' : 'maintenance'} items.</td></tr>`;
+        const colSpan = currentRiskTab === 'MAINT' ? 4 : 5;
+        riskBody.innerHTML = `<tr><td colspan="${colSpan}">No ${currentRiskTab === 'OVERDUE' ? 'overdue' : currentRiskTab === 'WAITING' ? 'waiting' : 'maintenance'} items.</td></tr>`;
         return;
       }
       list.forEach((r) => {
@@ -315,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <td>${r.issue || '-'}</td>
               <td>${r.status || '-'}</td>
               <td>${r.logged_by_name || r.reported_by_name || r.logged_by || '-'}</td>
-              <td>-</td>
             </tr>
           `;
         } else {
