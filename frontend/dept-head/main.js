@@ -73,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const assetsBody = document.getElementById('assets-body');
   const assetsSearch = document.getElementById('assets-search');
   const assetsFilterDept = document.getElementById('assets-filter-dept');
+  const assetsFilterCategory = document.getElementById('assets-filter-category');
   const assetsFilterStatus = document.getElementById('assets-filter-status');
   const activityBody = document.getElementById('activity-body');
   const activityBodyDash = document.getElementById('activity-body-dash');
@@ -376,15 +377,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const term = ((assetsSearch && assetsSearch.value) || '').toLowerCase().trim();
     const statusFilter = ((assetsFilterStatus && assetsFilterStatus.value) || '').toLowerCase();
     const deptFilter = ((assetsFilterDept && assetsFilterDept.value) || '').toLowerCase();
+    const categoryFilter = ((assetsFilterCategory && assetsFilterCategory.value) || '').toLowerCase();
     const filtered = deptAssets.filter((a) => {
       const matchTerm = !term || (a.asset_tag || '').toLowerCase().includes(term) || (a.name || '').toLowerCase().includes(term);
       const dep = (a.department || a.department_name || a.dept || '').toLowerCase();
+      const category = (a.category || '').toLowerCase();
       const matchDept = !deptFilter || dep === deptFilter;
       const activeReq = allRequests.find((r) => Number(r.asset_id) === Number(a.id) && ['BORROWED', 'ISSUED', 'APPROVED'].includes((r.status || '').toUpperCase()));
       const baseStatus = (a.status || '').toLowerCase();
       const derivedStatus = activeReq ? 'borrowed' : baseStatus;
       const matchStatus = !statusFilter || derivedStatus.includes(statusFilter);
-      return matchTerm && matchDept && matchStatus;
+      const matchCategory = !categoryFilter || category === categoryFilter;
+      return matchTerm && matchDept && matchStatus && matchCategory;
     });
     if (!filtered.length) {
       assetsBody.innerHTML = '<tr><td colspan="5">No assets found.</td></tr>';
@@ -485,20 +489,33 @@ document.addEventListener('DOMContentLoaded', () => {
       // Show all assets like clerk; user can filter via toolbar.
       deptAssets = assets;
       // populate dept filter options to mirror clerk assets view
-      if (assetsFilterDept) {
-        const seen = new Set();
-        assetsFilterDept.innerHTML = '<option value=\"\">Dept</option>';
-        deptAssets.forEach((a) => {
-          const depRaw = (a.department || a.department_name || a.dept || '').trim();
-          if (!depRaw) return;
-          const key = depRaw.toLowerCase();
-          if (!seen.has(key)) {
-            seen.add(key);
-            assetsFilterDept.innerHTML += `<option value=\"${key}\">${depRaw}</option>`;
-          }
-        });
-      }
-      renderAssets();
+        if (assetsFilterDept) {
+          const seen = new Set();
+          assetsFilterDept.innerHTML = '<option value=\"\">Dept</option>';
+          deptAssets.forEach((a) => {
+            const depRaw = (a.department || a.department_name || a.dept || '').trim();
+            if (!depRaw) return;
+            const key = depRaw.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              assetsFilterDept.innerHTML += `<option value=\"${key}\">${depRaw}</option>`;
+            }
+          });
+        }
+        if (assetsFilterCategory) {
+          const seen = new Set();
+          assetsFilterCategory.innerHTML = '<option value="">Category</option>';
+          deptAssets.forEach((a) => {
+            const catRaw = (a.category || '').trim();
+            if (!catRaw) return;
+            const key = catRaw.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              assetsFilterCategory.innerHTML += `<option value="${key}">${catRaw}</option>`;
+            }
+          });
+        }
+        renderAssets();
     } catch (err) {
       if (assetsBody) assetsBody.innerHTML = `<tr><td colspan="5">${err.message}</td></tr>`;
     }
@@ -651,6 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (assetsSearch) assetsSearch.addEventListener('input', renderAssets);
   if (assetsFilterDept) assetsFilterDept.addEventListener('change', renderAssets);
+  if (assetsFilterCategory) assetsFilterCategory.addEventListener('change', renderAssets);
   if (assetsFilterStatus) assetsFilterStatus.addEventListener('change', renderAssets);
 
   if (topSearchResults) {

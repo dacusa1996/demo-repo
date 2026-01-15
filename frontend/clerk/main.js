@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const assetsBody = document.getElementById('assets-table-body');
   const assetsSearch = document.getElementById('assets-search');
   const assetsFilterDept = document.getElementById('assets-filter-dept');
+  const assetsFilterCategory = document.getElementById('assets-filter-category');
   const assetsFilterStatus = document.getElementById('assets-filter-status');
 
   const activityBody = document.getElementById('activity-body');
@@ -474,10 +475,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const term = (assetsSearch && assetsSearch.value || '').toLowerCase();
     const statusFilter = assetsFilterStatus ? assetsFilterStatus.value.toLowerCase() : '';
     const deptFilter = assetsFilterDept ? assetsFilterDept.value : '';
+    const categoryFilter = assetsFilterCategory ? assetsFilterCategory.value.toLowerCase() : '';
 
     const rows = assets.filter((a) => {
       if (statusFilter && (a.status || '').toLowerCase() !== statusFilter) return false;
       if (deptFilter && (a.department || '') !== deptFilter) return false;
+      if (categoryFilter && (a.category || '').toLowerCase() !== categoryFilter) return false;
       if (term) {
         const hay = `${a.asset_tag || ''} ${a.name || ''}`.toLowerCase();
         if (!hay.includes(term)) return false;
@@ -600,6 +603,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const depts = Array.from(new Set(assets.map((a) => a.department).filter(Boolean)));
         assetsFilterDept.innerHTML = ['<option value="">Dept</option>', ...depts.map((d) => `<option value="${d}">${d}</option>`)].join('');
         assetsFilterDept.value = current;
+      }
+      if (assetsFilterCategory) {
+        const current = assetsFilterCategory.value;
+        const categories = Array.from(new Set(assets.map((a) => a.category).filter(Boolean)));
+        assetsFilterCategory.innerHTML = ['<option value="">Category</option>', ...categories.map((c) => `<option value="${c}">${c}</option>`)].join('');
+        assetsFilterCategory.value = current;
       }
       populateAssetSelect(newReqAssetSearch ? newReqAssetSearch.value : '');
       renderAssetsPanel();
@@ -830,7 +839,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   if (assetsSearch) assetsSearch.addEventListener('input', renderAssetsPanel);
-  [assetsFilterDept, assetsFilterStatus].forEach((sel) => {
+  [assetsFilterDept, assetsFilterCategory, assetsFilterStatus].forEach((sel) => {
     if (!sel) return;
     sel.addEventListener('change', renderAssetsPanel);
   });
